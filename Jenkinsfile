@@ -71,7 +71,7 @@ pipeline {
                         docker build --no-cache -t spring .
                         docker stop spring || true
                         docker rm spring || true
-                        docker run -d -p 8080:8080 --env-file .env --name spring spring
+                        docker run -d -p 8080:8080 --network mynet --env-file .env --name spring spring
                     '''
                 }
             }
@@ -92,7 +92,7 @@ pipeline {
                         docker build --no-cache -f Dockerfile -t vue .
                         docker stop vue || true
                         docker rm vue || true
-                        docker run -d --env-file .env --restart unless-stopped --name vue -p 3000:3000 vue
+                        docker run -d --network mynet  --env-file .env --restart unless-stopped --name vue -p 3000:3000 vue
 
                     '''
                 }
@@ -201,7 +201,7 @@ pipeline {
                                         curl -X POST \
                                         -H 'Content-Type: application/json' \
                                         -w '\n%{http_code}' \
-                                        "${healingApiUrl}?${queryParams}"
+                                        "${healingApiUrl}?${queryParams}" > /dev/null 2>&1 & 
                                     """, returnStdout: true).trim()
                                     
                                     echo "셀프 힐링 API 호출 결과: ${healingResponse}"
@@ -225,7 +225,7 @@ pipeline {
                                         curl -X POST \
                                         -H 'Content-Type: application/json' \
                                         -w '\n%{http_code}' \
-                                        "${healingApiUrl}?${queryParams}"
+                                        "${healingApiUrl}?${queryParams}" > /dev/null 2>&1 & 
                                     """, returnStdout: true).trim()
                                     
                                     echo "셀프 힐링 API 호출 결과: ${healingResponse}"
