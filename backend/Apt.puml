@@ -1,0 +1,47 @@
+@startuml
+:User: as User
+
+User -left-> (Start)
+
+package "Apt" {
+    (Find Apt) as Apts
+}
+
+package "Board" {
+    (Inquiry) as Inquiry
+    (FAQ) as FAQ
+    (Notice) as Notice
+}
+
+package "Interest" {
+    (Interest Area) as InterestArea
+    (Interest House) as InterestHouse
+}
+
+package "AI" {
+    (AI Chat) as AIChat
+}
+
+package "USER" {
+    (My Page) as mypage
+}
+
+User --> Apts : "View/Search"
+User --> Inquiry : "Submit Inquiry"
+User --> FAQ : "Submit FAQ"
+User --> Notice : "Submit Notice"
+User --> InterestArea : "Manage Interest Area"
+User --> InterestHouse : "Manage Interest House"
+User --> AIChat : "Chat with AI"
+User --> mypage : "Access My Page"
+
+note right of User
+Users can:
+- View and search apartments
+- Submit inquiries and FAQs
+- Add/manage interest list
+- Chat with AI
+- Manage their profile
+end note
+
+@enduml

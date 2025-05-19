@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.user.mapper.UserMapper">
+
+    <select id="getMaxUserId" resultType="Integer">
+        SELECT MAX(CAST(id AS UNSIGNED)) FROM user
+    </select>
+
+    <!-- 회원가입 -->
+    <insert id="registerUser" parameterType="com.ssafy.user.vo.User">
+        INSERT INTO user (id, nickname, email, password, salt, login_type, role, verified, profile_image)
+        VALUES (#{id}, #{nickname}, #{email}, #{password}, #{salt}, #{loginType}, #{role}, #{verified}, #{profileImage})
+    </insert>
+
+    <!-- 이메일로 사용자 조회 (로그인 시 사용) -->
+    <select id="getUserByEmail" parameterType="string" resultMap="userResultMap">
+        SELECT * FROM user WHERE email = #{email}
+    </select>
+
+    <!-- ID로 사용자 조회 -->
+    <select id="getUserById" parameterType="string" resultMap="userResultMap">
+        SELECT * FROM user WHERE id = #{id}
+    </select>
+
+    <!-- 사용자 정보 업데이트 -->
+    <update id="updateUser" parameterType="com.ssafy.user.vo.User" >
+        UPDATE user SET nickname = #{nickname}, password = #{password}, salt = #{salt}, role = #{role}, verified = #{verified}, profile_image = #{profileImage}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 인증 코드 저장 -->
+    <insert id="saveVerificationCode" parameterType="com.ssafy.user.vo.VerificationCode">
+        INSERT INTO verification_code (email, code) VALUES (#{email}, #{code})
+    </insert>
+
+    <!-- 이메일로 인증 코드 조회 -->
+    <select id="getVerificationCodeByEmail" parameterType="string" resultType="com.ssafy.user.vo.VerificationCode">
+        SELECT * FROM verification_code WHERE email = #{email} ORDER BY id DESC LIMIT 1
+    </select>
+
+    <!-- 인증 코드 삭제 (사용 후) -->
+    <delete id="deleteVerificationCodeByEmail" parameterType="string">
+        DELETE FROM verification_code WHERE email = #{email}
+    </delete>
+
+    <update id="updateUser2" parameterType="map">
+        UPDATE user
+        SET nickname = #{nickname}, password = #{password}, salt = #{salt}
+        WHERE id = #{id}
+    </update>
+
+
+
+
+    <!-- User와 OAuthEntity 매핑을 위한 resultMap -->
+    <resultMap id="userResultMap" type="com.ssafy.user.vo.User">
+        <id property="id" column="id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="email" column="email"/>
+        <result property="password" column="password"/>
+        <result property="salt" column="salt"/>
+        <result property="loginType" column="login_type"/>
+        <result property="role" column="role"/>
+        <result property="verified" column="verified"/>
+        <result property="profileImage" column="profile_image"/>
+
+        <!-- OAuthEntity와의 관계 매핑 -->
+        <association property="oauthEntity" column="id" javaType="com.ssafy.user.vo.OAuthEntity"
+                     select="com.ssafy.user.mapper.OAuthMapper.findOAuthByUserId"/>
+    </resultMap>
+</mapper>

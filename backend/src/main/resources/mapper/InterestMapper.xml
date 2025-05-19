@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.interest.mapper.InterestMapper">
+
+    <!-- InterestHouse와 HouseInfo를 매핑하는 ResultMap -->
+    <resultMap id="InterestHouseResultMap" type="com.ssafy.interest.dto.InterestHouseDto">
+        <id property="interestId" column="interest_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="houseInfoId" column="house_info_id"/>
+        <result property="bookmarked" column="bookmarked"/>
+        <result property="time" column="time"/>
+
+        <!-- houseInfoId를 통해 HouseInfos 테이블의 상세 정보 가져오기 -->
+        <association property="houseInfos" javaType="com.ssafy.apt.vo.HouseInfos">
+            <id property="aptSeq" column="house_info_id"/>
+            <result property="aptNm" column="apt_nm"/>
+            <result property="sggCd" column="sgg_cd"/>
+            <result property="umdCd" column="umd_cd"/>
+            <result property="umdNm" column="umd_nm"/>
+            <result property="roadNm" column="road_nm"/>
+            <result property="jibun" column="jibun"/>
+            <result property="buildYear" column="build_year"/>
+            <result property="latitude" column="latitude"/>
+            <result property="longitude" column="longitude"/>
+        </association>
+    </resultMap>
+
+    <!-- 최근 본 아파트 목록 -->
+    <select id="findRecentlyViewedApartments" resultMap="InterestHouseResultMap">
+        SELECT
+            ih.interest_id, ih.user_id, ih.house_info_id, ih.bookmarked, ih.time,
+            hi.apt_seq AS house_info_id, hi.apt_nm, hi.sgg_cd, hi.umd_cd, hi.umd_nm,
+            hi.road_nm, hi.jibun, hi.build_year, hi.latitude, hi.longitude
+        FROM interest_house ih
+                 LEFT JOIN house_infos hi ON ih.house_info_id = hi.apt_seq
+        WHERE ih.user_id = #{userId}
+        ORDER BY ih.time DESC
+    </select>
+
+    <!-- 북마크된 아파트 목록 -->
+    <select id="findBookmarkedApartments" resultMap="InterestHouseResultMap">
+        SELECT
+            ih.interest_id, ih.user_id, ih.house_info_id, ih.bookmarked, ih.time,
+            hi.apt_seq AS house_info_id, hi.apt_nm, hi.sgg_cd, hi.umd_cd, hi.umd_nm,
+            hi.road_nm, hi.jibun, hi.build_year, hi.latitude, hi.longitude
+        FROM interest_house ih
+                 LEFT JOIN house_infos hi ON ih.house_info_id = hi.apt_seq
+        WHERE ih.user_id = #{userId} AND ih.bookmarked = true
+        ORDER BY ih.time DESC
+    </select>
+
+    <!-- 아파트 열람 추가 (중복 시 시간 업데이트) -->
+    <insert id="insertViewedApartment">
+        INSERT INTO interest_house (user_id, house_info_id, bookmarked, time)
+        VALUES (#{userId}, #{houseInfoId}, #{bookmarked}, #{time})
+            ON DUPLICATE KEY UPDATE
+                                 bookmarked = VALUES(bookmarked),
+                                 time = VALUES(time);
+    </insert>
+
+    <!-- InterestArea와 동 코드 정보를 매핑하는 ResultMap -->
+    <resultMap id="InterestAreaResultMap" type="com.ssafy.interest.dto.InterestAreaDto">
+        <id property="interestId" column="interest_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="dongCd" column="dong_cd"/>
+        <result property="sidoName" column="sido_name"/>
+        <result property="gugunName" column="gugun_name"/>
+        <result property="dongName" column="dong_name"/>
+        <result property="bookmarked" column="bookmarked"/>
+        <result property="time" column="time"/>
+    </resultMap>
+
+    <!-- 최근 조회한 동 목록 -->
+    <select id="findRecentlyViewedNeighborhoods" resultMap="InterestAreaResultMap">
+        SELECT ia.*, dc.sido_name, dc.gugun_name, dc.dong_name
+        FROM interest_area ia
+                 LEFT JOIN dong_code dc ON ia.dong_cd = dc.dong_cd
+        WHERE ia.user_id = #{userId}
+        ORDER BY ia.time DESC
+    </select>
+
+    <!-- 북마크된 동 목록 -->
+    <select id="findFavoriteNeighborhoods" resultMap="InterestAreaResultMap">
+        SELECT ia.*, dc.sido_name, dc.gugun_name, dc.dong_name
+        FROM interest_area ia
+                 LEFT JOIN dong_code dc ON ia.dong_cd = dc.dong_cd
+        WHERE ia.user_id = #{userId} AND ia.bookmarked = true
+        ORDER BY ia.time DESC
+    </select>
+
+    <!-- 동 조회 추가 (중복 시 시간 업데이트) -->
+    <insert id="insertViewedNeighborhood">
+        INSERT INTO interest_area (user_id, dong_cd, bookmarked, time)
+        VALUES (#{userId}, #{dongCd}, #{bookmarked}, #{time})
+            ON DUPLICATE KEY UPDATE
+                                 bookmarked = VALUES(bookmarked),
+                                 time = VALUES(time);
+    </insert>
+
+    <select id="findApartmentDetails" resultType="com.ssafy.apt.vo.HouseInfos">
+        SELECT
+            apt_seq,
+            apt_nm,
+            sgg_cd,
+            umd_cd,
+            umd_nm,
+            road_nm,
+            jibun,
+            build_year,
+            latitude,
+            longitude
+        FROM house_infos
+        WHERE apt_seq = #{aptSeq}
+    </select>
+
+    <select id="findApartmentDetailsByHouseInfoId" resultType="com.ssafy.apt.vo.HouseInfos">
+        SELECT
+            apt_seq AS houseInfoId,
+            apt_nm AS aptNm,
+            sgg_cd AS sggCd,
+            umd_cd AS umdCd,
+            umd_nm AS umdNm,
+            road_nm AS roadNm,
+            jibun AS jibun,
+            build_year AS buildYear,
+            latitude,
+            longitude
+        FROM house_infos
+        WHERE apt_seq = #{houseInfoId};
+    </select>
+
+    <select id="findNeighborhoodDetailsByDongCd" resultType="com.ssafy.apt.vo.DongCode">
+        SELECT
+            dong_cd AS dongCd,
+            sido_name AS sidoName,
+            gugun_name AS gugunName,
+            dong_name AS dongName
+        FROM dong_code
+        WHERE dong_cd = #{dongCd};
+    </select>
+
+    <!-- houseInfoId와 userId로 존재 여부 확인 -->
+    <select id="existsApartment" resultType="int">
+        SELECT COUNT(*)
+        FROM interest_house
+        WHERE house_info_id = #{houseInfoId} AND user_id = #{userId}
+    </select>
+
+    <select id="selectBookmarkStatus" resultType="boolean">
+        SELECT bookmarked
+        FROM interest_house
+        WHERE house_info_id = #{houseInfoId}
+          AND user_id = #{userId}
+    </select>
+
+    <!-- houseInfoId와 userId로 존재 여부 확인 -->
+    <select id="existsNeighborhood" resultType="int">
+        SELECT COUNT(*)
+        FROM interest_area
+        WHERE dong_cd = #{dongCd} AND user_id = #{userId}
+    </select>
+
+    <select id="selectBookmarkStatusNh" resultType="boolean">
+        SELECT bookmarked
+        FROM interest_area
+        WHERE dong_cd = #{dongCd}
+          AND user_id = #{userId}
+    </select>
+
+
+    <select id="findTopViewedApartments" resultType="map">
+        SELECT
+            ih.house_info_id AS houseInfoId,
+            hi.apt_nm AS apartmentName,
+            COUNT(ih.house_info_id) AS viewCount
+        FROM interest_house ih
+                 LEFT JOIN house_infos hi ON ih.house_info_id = hi.apt_seq
+        GROUP BY ih.house_info_id, hi.apt_nm
+        ORDER BY viewCount DESC
+            LIMIT 5;
+    </select>
+
+    <!-- 아파트 삭제 -->
+    <delete id="deleteApartment">
+        DELETE FROM interest_house
+        WHERE house_info_id = #{houseInfoId} AND user_id = #{userId};
+    </delete>
+
+    <!-- 동네 삭제 -->
+    <delete id="deleteNeighborhood">
+        DELETE FROM interest_area
+        WHERE dong_cd = #{dongCd} AND user_id = #{userId};
+    </delete>
+
+
+</mapper>

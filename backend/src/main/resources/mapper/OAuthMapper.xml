@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.user.mapper.OAuthMapper">
+
+    <select id="existKakaoUser" resultType="int" parameterType="string">
+        SELECT COUNT(1) FROM oauth_entity WHERE kakao_id = #{kakaoId}
+    </select>
+
+    <!-- 새로운 카카오 사용자 삽입 -->
+    <insert id="insertKakaoUser" parameterType="com.ssafy.user.vo.OAuthEntity">
+        INSERT INTO oauth_entity (kakao_id, access_token, refresh_token, user_id, profile_image)
+        VALUES (#{kakaoId}, #{accessToken}, #{refreshToken}, #{user.id}, #{profileImage})
+    </insert>
+
+</mapper>

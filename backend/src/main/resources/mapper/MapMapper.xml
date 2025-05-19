@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.apt.mapper.MapMapper">
+	<resultMap type="com.ssafy.apt.vo.SidoCode" id="sido">
+		<result property="sidoCode" column="sido_code" />
+		<result property="sidoName" column="sido_name" />
+	</resultMap>
+
+	<resultMap type="com.ssafy.apt.vo.GugunCode" id="gugun">
+		<result property="gugunCode" column="gugun_code" />
+		<result property="gugunName" column="gugun_name" />
+	</resultMap>
+
+	<select id="getSido" resultMap="sido">
+		select left(sido_code,2) as sido_code, sido_name
+		from sido_code
+		order by sido_code
+	</select>
+	
+	<select id="getGugunInSido" parameterType="string" resultMap="gugun">
+		select left(gugun_code,5) as gugun_code, gugun_name
+		from gugun_code
+		where left(gugun_code,2) = #{sido}
+		order by gugun_code
+	</select>
+
+	<select id="getDongInGugun" parameterType="string" resultType="com.ssafy.apt.vo.DongCode">
+		select dong_cd as dongCd, dong_name as dongName
+		from dong_code
+		where left(dong_cd,5) = #{gugun}
+		order by dong_cd
+	</select>
+	
+</mapper>

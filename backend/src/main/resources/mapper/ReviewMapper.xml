@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.review.mapper.ReviewMapper">
+
+    <!-- Review와 연관된 HouseInfos와 User를 매핑하는 resultMap -->
+    <resultMap id="ReviewResultMap" type="com.ssafy.review.vo.Review">
+        <id property="reviewId" column="review_id"/>
+        <result property="time" column="time"/>
+        <result property="content" column="content"/>
+        <result property="rating" column="rating"/>
+        <result property="imageUrl" column="image_url"/>
+        <result property="isAdmin" column="is_admin"/>
+
+        <!-- HouseInfos 매핑 -->
+        <association property="houseInfos" column="house_infos_id" javaType="com.ssafy.apt.vo.HouseInfos">
+            <id property="aptSeq" column="apt_seq"/>
+            <result property="aptNm" column="apt_nm"/>
+            <result property="sggCd" column="sgg_cd"/>
+            <result property="umdCd" column="umd_cd"/>
+            <result property="umdNm" column="umd_nm"/>
+            <result property="roadNm" column="road_nm"/>
+            <result property="jibun" column="jibun"/>
+            <result property="buildYear" column="build_year"/>
+            <result property="latitude" column="latitude"/>
+            <result property="longitude" column="longitude"/>
+            <result property="dongCd" column="dong_cd"/>
+        </association>
+
+        <!-- User 매핑 -->
+        <association property="user" column="user_id" javaType="com.ssafy.user.vo.User">
+            <id property="id" column="user_id"/>
+            <result property="nickname" column="nickname"/>
+            <result property="email" column="email"/>
+            <!-- 추가적으로 필요한 User 속성들을 여기에 매핑 -->
+        </association>
+    </resultMap>
+
+    <insert id="addReview" parameterType="com.ssafy.review.vo.Review">
+        INSERT INTO review (apt_seq, time, user_id, content, rating, image_url)
+        VALUES (#{houseInfos.aptSeq}, #{time}, #{user.id}, #{content}, #{rating}, #{imageUrl})
+    </insert>
+
+    <update id="updateReview" parameterType="com.ssafy.review.vo.Review">
+        UPDATE review
+        SET
+            content = #{content},
+            rating = #{rating},
+            image_url = #{imageUrl}
+        WHERE review_id = #{reviewId}
+    </update>
+
+    <!-- 특정 아파트에 대한 리뷰 목록 조회 -->
+    <select id="getReviewsByHouseId" parameterType="String" resultMap="ReviewResultMap">
+        SELECT r.*, h.apt_seq, h.apt_nm, h.sgg_cd, h.umd_cd, h.umd_nm, h.road_nm, h.jibun, h.build_year, h.latitude, h.longitude, h.dong_cd,
+               u.nickname, u.email
+        FROM review r
+                 JOIN house_infos h ON r.apt_seq = h.apt_seq
+                 JOIN user u ON r.user_id = u.id
+        WHERE r.apt_seq = #{houseId}
+    </select>
+
+
+    <!-- 리뷰 삭제 -->
+    <delete id="deleteReview" parameterType="Long">
+        DELETE FROM review WHERE review_id = #{reviewId}
+    </delete>
+
+    <!-- 특정 리뷰 조회 -->
+    <select id="getReviewById" parameterType="Long" resultMap="ReviewResultMap">
+        SELECT r.*, h.apt_nm, h.sgg_cd, h.umd_cd, h.umd_nm, h.road_nm, h.jibun, h.build_year, h.latitude, h.longitude, h.dong_cd,
+               u.nickname, u.email
+        FROM review r
+                 JOIN house_infos h ON r.apt_seq = h.apt_seq
+                 JOIN user u ON r.user_id = u.id
+        WHERE r.review_id = #{reviewId}
+    </select>
+
+    <!-- rating > 4 리뷰 조회 -->
+    <select id="getHighRatingReviews" resultMap="ReviewResultMap">
+        SELECT r.*, h.apt_seq, h.apt_nm, h.sgg_cd, h.umd_cd, h.umd_nm, h.road_nm, h.jibun, h.build_year, h.latitude, h.longitude, h.dong_cd,
+               u.nickname, u.email
+        FROM review r
+                 JOIN house_infos h ON r.apt_seq = h.apt_seq
+                 JOIN user u ON r.user_id = u.id
+        WHERE r.rating >= 4
+        ORDER BY r.time DESC
+    </select>
+
+    <!-- Get reviews by user ID -->
+    <select id="getReviewsByUserId" parameterType="String" resultMap="ReviewResultMap">
+        SELECT r.*, h.apt_seq, h.apt_nm, h.sgg_cd, h.umd_cd, h.umd_nm, h.road_nm, h.jibun, h.build_year, h.latitude, h.longitude, h.dong_cd,
+               u.nickname, u.email
+        FROM review r
+                 JOIN house_infos h ON r.apt_seq = h.apt_seq
+                 JOIN user u ON r.user_id = u.id
+        WHERE r.user_id = #{userId}
+        ORDER BY r.time DESC
+    </select>
+
+
+</mapper>

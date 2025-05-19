@@ -1,0 +1,88 @@
+@import 'pretendard/dist/web/static/pretendard.css';
+@font-face {
+    font-family: 'ChangwonDangamAsac';
+    font-weight: bold;
+    font-style: normal;
+    src: url('@/assets/fonts/ChangwonDangamAsac-Bold_0712.otf') format('opentype'); /* 경로와 파일 형식 */
+    font-display: swap;
+}
+:root {
+    --figma-blue: #4F9CF9;
+    --figma-blue-tp: #4f9bf9e1;
+    --figma-blue-grey: #3c79c4;
+    --figma-blue-hover: #4388dd;
+    --celestial-blue: #479add;
+    --ucla-blue: #2274A5;
+    --paynes-gray: #4F6D7A;
+    --columbia-blue: #C0D6DF;
+    --alice-blue: #DBE9EE;
+    --powder-blue: #93ACCA;
+    --true-blue: #4A6FA5;
+    --lapis-lazuli: #166088;
+    --dogwood-rose: #D90368;
+    --indian-red: #e66767;
+    --indian-red-tp: #e66767dc;
+    --orange-pantone: #F75C03;
+    --saffron: #E1BC29;
+    --jonquil: #F1C40F;
+    --xanthous: #E6AF2E;
+    --xanthous-tp: #e6af2ede;
+    --figma-yellow: #FFE492;
+    --jade: #3BB273;
+    --jade-tp: #3bb272d8;
+    --emerald: #00CC66; 
+    --royal-purple: #7768AE;
+    --royal-purple-tp: #7768aebb;
+    --tekhelet: #3D348B;
+    --eerie-black: #191716;
+    --khaki: #BEB7A4;
+    --khaki-grey: #c2c0bb;
+    --alabaster: #E0E2DB;
+    --eerie-grey: #191716d7;
+}
+#app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: white;
+    font-family: 'Pretendard';
+}
+main {
+    width: 100%;
+    height: calc(100vh - 70px); /*header,footer 높이만큼 뺌*/
+    margin: 0;
+    padding: 0;
+}
+.container{
+    width: 85%;
+    height: 100%;
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+}
+header{
+    background-color: white;
+    padding: 0 2%;
+    height: 70px;
+}
+#home{
+    color: var(--eerie-black);
+    font-family: 'ChangwonDangamAsac';
+    margin: 0px;
+}
+.navbar-nav.mx-auto .nav-link {
+    color: #007bff;
+}
+.navbar-nav.mx-auto .nav-link:hover {
+    color: #0056b3;
+}
+
+  

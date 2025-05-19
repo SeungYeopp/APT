@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.apt.mapper.AptMapper">
+    <resultMap type="com.ssafy.apt.vo.HouseInfos" id="HouseInfo">
+        <result property="aptSeq" column="apt_seq" />
+        <result property="aptNm" column="apt_nm" />
+        <result property="buildYear" column="build_year" />
+        <result property="dongCd" column="dong_cd" />
+        <result property="jibun" column="jibun" />
+        <result property="latitude" column="latitude" />
+        <result property="longitude" column="longitude" />
+        <result property="roadNm" column="road_nm" />
+        <result property="sggCd" column="sgg_cd" />
+        <result property="umdCd" column="umd_cd" />
+        <result property="umdNm" column="umd_nm" />
+    </resultMap>
+
+    <resultMap type="com.ssafy.apt.vo.HouseDeals" id="HouseDeal">
+        <result property="dealId" column="deal_id" />
+        <result property="dealAmount" column="deal_amount" />
+        <result property="dealDay" column="deal_day" />
+        <result property="dealMonth" column="deal_month" />
+        <result property="dealYear" column="deal_year" />
+        <result property="excluUseAr" column="exclu_use_ar" />
+        <result property="floor" column="floor" />
+        <result property="apt_seq" column="apt_seq" />
+
+        <!-- HouseInfos 매핑 -->
+        <association property="houseInfos" column="apt_seq" javaType="com.ssafy.apt.vo.HouseInfos">
+            <id property="aptSeq" column="apt_seq"/>
+            <result property="aptNm" column="apt_nm" />
+            <result property="buildYear" column="build_year" />
+            <result property="dongCd" column="dong_cd" />
+            <result property="jibun" column="jibun" />
+            <result property="latitude" column="latitude" />
+            <result property="longitude" column="longitude" />
+            <result property="roadNm" column="road_nm" />
+            <result property="sggCd" column="sgg_cd" />
+            <result property="umdCd" column="umd_cd" />
+            <result property="umdNm" column="umd_nm" />
+        </association>
+    </resultMap>
+
+    <resultMap id="HouseInfoResultMap" type="com.ssafy.apt.dto.HouseInfoDto">
+        <!-- house_infos 필드 매핑 -->
+        <result property="aptSeq" column="apt_seq" />
+        <result property="aptNm" column="apt_nm" />
+        <result property="buildYear" column="build_year" />
+        <result property="dongCd" column="dong_cd" />
+        <result property="jibun" column="jibun" />
+        <result property="latitude" column="latitude" />
+        <result property="longitude" column="longitude" />
+        <result property="roadNm" column="road_nm" />
+        <result property="sggCd" column="sgg_cd" />
+        <result property="umdCd" column="umd_cd" />
+        <result property="umdNm" column="umd_nm" />
+
+        <!-- recent_deals 필드 매핑 -->
+        <result property="recentDealAmount" column="recent_deal_amount" />
+        <result property="recentDealDate" column="recent_deal_date" />
+        <result property="exclusiveArea" column="exclusive_area" />
+        <result property="recentFloor" column="recent_floor" />
+    </resultMap>
+
+    <!-- 지역별 아파트 정보 조회 -->
+    <select id="getAptInfoByArea" parameterType="String" resultMap="HouseInfo">
+        SELECT apt_seq, apt_nm, build_year, dong_cd, jibun, latitude, longitude,
+               road_nm, sgg_cd, umd_cd, umd_nm
+        FROM house_infos
+        WHERE dong_cd = #{dong_code}
+    </select>
+
+    <!-- 지역별 아파트 정보 조회 : 최근 거래 내역 포함-->
+    <select id="getAptInfoByAreaWithDeals" parameterType="String" resultMap="HouseInfoResultMap">
+        SELECT
+            hi.apt_seq,
+            hi.apt_nm,
+            hi.build_year,
+            hi.dong_cd,
+            hi.jibun,
+            hi.latitude,
+            hi.longitude,
+            hi.road_nm,
+            hi.sgg_cd,
+            hi.umd_cd,
+            hi.umd_nm,
+            rd.deal_amount AS recent_deal_amount,
+            rd.recent_deal_date,
+            rd.exclu_use_ar AS exclusive_area,
+            rd.floor AS recent_floor
+        FROM
+            house_infos hi
+                LEFT JOIN
+            recent_deals rd
+            ON
+                hi.apt_seq = rd.apt_seq
+        WHERE
+            hi.dong_cd = #{location}
+    </select>
+
+    <!-- 아파트 이름으로 정보 조회 -->
+    <select id="getAptInfoByName" parameterType="String" resultMap="HouseInfo">
+        SELECT apt_seq, apt_nm, build_year, dong_cd, jibun, latitude, longitude,
+               road_nm, sgg_cd, umd_cd, umd_nm
+        FROM house_infos
+        WHERE apt_nm LIKE CONCAT('%', #{apt_nm}, '%')
+    </select>
+
+    <!-- 아파트 이름으로 정보 조회 : 최근 거래 내역 포함 -->
+    <select id="getAptInfoByNameWithDeals" parameterType="String" resultMap="HouseInfoResultMap">
+        SELECT
+            hi.apt_seq,
+            hi.apt_nm,
+            hi.build_year,
+            hi.dong_cd,
+            hi.jibun,
+            hi.latitude,
+            hi.longitude,
+            hi.road_nm,
+            hi.sgg_cd,
+            hi.umd_cd,
+            hi.umd_nm,
+            rd.deal_amount AS recent_deal_amount,
+            rd.recent_deal_date,
+            rd.exclu_use_ar AS exclusive_area,
+            rd.floor AS recent_floor
+        FROM
+            house_infos hi
+                LEFT JOIN
+            recent_deals rd
+            ON
+                hi.apt_seq = rd.apt_seq
+        WHERE
+            hi.apt_nm LIKE CONCAT('%', #{apt_nm}, '%')
+    </select>
+
+    <select id="getAllHouseInfosWithDeals" resultMap="HouseInfoResultMap">
+        SELECT
+            hi.apt_seq,
+            hi.apt_nm,
+            hi.build_year,
+            hi.dong_cd,
+            hi.jibun,
+            hi.latitude,
+            hi.longitude,
+            hi.road_nm,
+            hi.sgg_cd,
+            hi.umd_cd,
+            hi.umd_nm,
+            rd.deal_amount AS recent_deal_amount,
+            rd.recent_deal_date,
+            rd.exclu_use_ar AS exclusive_area,
+            rd.floor AS recent_floor
+        FROM
+            house_infos hi
+                LEFT JOIN
+            recent_deals rd
+            ON hi.apt_seq = rd.apt_seq
+    </select>
+
+
+    <!-- 아파트 거래 조회 -->
+    <select id="getAptDealByAptNM" parameterType="String" resultMap="HouseDeal">
+        SELECT hd.deal_id, hd.deal_amount, hd.deal_day, hd.deal_month, hd.deal_year,
+               hd.exclu_use_ar, hd.floor,
+               hi.dong_cd, hi.sgg_cd, hi.umd_cd, hi.umd_nm, hi.jibun, hi.road_nm,
+               hi.apt_nm, hi.build_year, hi.latitude, hi.longitude
+        FROM house_deals hd
+                 LEFT JOIN house_infos hi ON hd.apt_seq = hi.apt_seq
+        WHERE hi.apt_seq LIKE #{apt_seq}
+    </select>
+
+    <select id="findAllDongCodes" resultType="com.ssafy.apt.vo.DongCode">
+        SELECT dong_cd AS dongCd, sido_name AS sidoName, gugun_name AS gugunName, dong_name AS dongName FROM dong_code
+    </select>
+
+    <select id="getAllApartmentNames" resultType="String">
+        SELECT apt_nm
+        FROM house_infos
+    </select>
+
+    <!-- 동 이름으로 동코드 검색 -->
+    <select id="findDongCodeByName" resultType="com.ssafy.apt.vo.DongCode" parameterType="String">
+        SELECT
+            dong_cd AS dongCd,
+            sido_name AS sidoName,
+            gugun_name AS gugunName,
+            dong_name AS dongName
+        FROM dong_code
+        WHERE dong_name = #{dongName}
+    </select>
+
+    <!-- 시도, 구군, 동 이름으로 동코드 검색 -->
+    <select id="findDongCodeByDetails" resultType="com.ssafy.apt.vo.DongCode" parameterType="map">
+        SELECT
+            dong_cd AS dongCd,
+            sido_name AS sidoName,
+            gugun_name AS gugunName,
+            dong_name AS dongName
+        FROM dong_code
+        WHERE
+            sido_name LIKE CONCAT(#{sidoName}, '%')
+          AND gugun_name LIKE CONCAT(#{gugunName}, '%')
+          AND dong_name LIKE CONCAT(#{dongName}, '%')
+        ORDER BY dong_name ASC
+            LIMIT 1
+    </select>
+
+    <!-- By Sido and Sgg (Sido + Gugun) -->
+    <select id="getAptInfoByAreaWithDealsBySggAndSido" parameterType="Map" resultMap="HouseInfoResultMap">
+        SELECT
+        hi.apt_seq,
+        hi.apt_nm,
+        hi.build_year,
+        hi.dong_cd,
+        hi.jibun,
+        hi.latitude,
+        hi.longitude,
+        hi.road_nm,
+        hi.sgg_cd,
+        hi.umd_cd,
+        hi.umd_nm,
+        rd.deal_amount AS recent_deal_amount,
+        rd.recent_deal_date,
+        rd.exclu_use_ar AS exclusive_area,
+        rd.floor AS recent_floor
+        FROM house_infos hi
+        LEFT JOIN recent_deals rd
+        ON hi.apt_seq = rd.apt_seq
+        WHERE left(hi.dong_cd,5) = #{location}<!-- 5자리 코드 -->
+    </select>
+
+
+    <!-- By Sido (2자리로 검색) -->
+    <select id="getAptInfoByAreaWithDealsBySido" parameterType="String" resultMap="HouseInfoResultMap">
+        SELECT
+        hi.apt_seq,
+        hi.apt_nm,
+        hi.build_year,
+        hi.dong_cd,
+        hi.jibun,
+        hi.latitude,
+        hi.longitude,
+        hi.road_nm,
+        hi.sgg_cd,
+        hi.umd_cd,
+        hi.umd_nm,
+        rd.deal_amount AS recent_deal_amount,
+        rd.recent_deal_date,
+        rd.exclu_use_ar AS exclusive_area,
+        rd.floor AS recent_floor
+        FROM house_infos hi
+        LEFT JOIN recent_deals rd
+        ON hi.apt_seq = rd.apt_seq
+        WHERE left(hi.dong_cd, 2) = #{location} <!-- 2자리 코드 -->
+    </select>
+
+
+
+</mapper>
