@@ -5,7 +5,7 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 # 2단계: 실행 스테이지
-FROM openjdk:17-jdk-slim
+FROM openjdk:17-jdk
 WORKDIR /app
 COPY --from=builder /app/target/*.jar app.jar
 CMD ["java", "-jar", "app.jar"]
