@@ -3,7 +3,7 @@ pipeline {
     parameters {
         string(name: 'ORIGINAL_BRANCH_NAME', defaultValue: 'master', description: '브랜치 이름')
         string(name: 'BRANCH_NAME', defaultValue: 'master', description: '브랜치 이름')
-        string(name: 'PROJECT_ID', defaultValue: '20', description: '프로젝트 ID')
+        string(name: 'PROJECT_ID', defaultValue: '22', description: '프로젝트 ID')
     }
     stages {
         stage('Checkout') {
@@ -184,7 +184,7 @@ pipeline {
                         
                         // 셀프 힐링 API 호출 조건 확인
                         // 헬스 체크가 실패한 경우와 빌드가 실패한 경우 구분
-                        if (params.BRANCH_NAME == params.ORIGINAL_BRANCH_NAME) {
+                        if (params.BRANCH_NAME == params.ORIGINAL_BRANCH_NAME && currentBuild.number > 1) {
                             if (env.HEALTH_CHECK_STATUS == 'FAILED') {
                                 // 헬스 체크 실패 → 런타임 이슈로 셀프 힐링
                                 echo "🔧 헬스 체크 실패 → 셀프 힐링 API 호출 (RUNTIME)"
