@@ -3,7 +3,7 @@ pipeline {
     parameters {
         string(name: 'ORIGINAL_BRANCH_NAME', defaultValue: 'master', description: '브랜치 이름')
         string(name: 'BRANCH_NAME', defaultValue: 'master', description: '브랜치 이름')
-        string(name: 'PROJECT_ID', defaultValue: '37', description: '프로젝트 ID')
+        string(name: 'PROJECT_ID', defaultValue: '38', description: '프로젝트 ID')
     }
     stages {
         stage('Checkout') {
@@ -66,57 +66,60 @@ pipeline {
                 expression { env.BACKEND_CHANGED == "true" }
             }
             steps {
-                script {
-                    env.BACKEND_BUILD_STATUS = 'SUCCESS'
-                    try {
-                        withCredentials([file(credentialsId: "backend", variable: 'BACKEND_ENV')]) {
-                            sh '''
-                                cp "$BACKEND_ENV" "$WORKSPACE/backend/.env"
-                            '''
+                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                    script {
+                        try {
+                            env.BACKEND_BUILD_STATUS = 'SUCCESS'
+                            withCredentials([file(credentialsId: "backend", variable: 'BACKEND_ENV')]) {
+                                sh '''
+                                    cp "$BACKEND_ENV" "$WORKSPACE/backend/.env"
+                                '''
+                            }
+                            dir('backend') {
+                                sh '''
+                                    docker build -t spring .
+                                    docker stop spring || true
+                                    docker rm spring || true
+                                    docker run -d -p 8080:8080 --network mynet --env-file .env --name spring spring
+                                '''
+                            }
+                        } catch (Exception e) {
+                            env.BACKEND_BUILD_STATUS = 'FAILED'
+                            echo "❌ 백엔드 빌드 실패: ${e.message}"
+                            throw e
                         }
-                        dir('backend') {
-                            sh '''
-                                docker build -t spring .
-                                docker stop spring || true
-                                docker rm spring || true
-                                docker run -d -p 8080:8080 --network mynet --env-file .env --name spring spring
-                            '''
-                        }
-                    } catch (Exception e) {
-                        env.BACKEND_BUILD_STATUS = 'FAILED'
-                        echo "❌ 백엔드 빌드 실패: ${e.message}"
-                        throw e
                     }
                 }
             }
-        }
+        }   
         stage('Build Frontend') {
             when {
                 expression { env.FRONTEND_CHANGED == "true" }
             }
             steps {
-                script {
-                    env.FRONTEND_BUILD_STATUS = 'SUCCESS'
-                    try {
-                        withCredentials([file(credentialsId: "frontend", variable: 'FRONTEND_ENV')]) {
-                            sh '''
-                                cp "$FRONTEND_ENV" "$WORKSPACE/frontend/.env"
-                            '''
+                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                    script {
+                        try {
+                            env.FRONTEND_BUILD_STATUS = 'SUCCESS'
+                            withCredentials([file(credentialsId: "frontend", variable: 'FRONTEND_ENV')]) {
+                                sh '''
+                                    cp "$FRONTEND_ENV" "$WORKSPACE/frontend/.env"
+                                '''
+                            }
+                            dir('frontend') {
+                                sh '''
+                                    set -e
+                                    docker build -f Dockerfile -t react .
+                                    docker stop react || true
+                                    docker rm react || true
+                                    docker run -d --network mynet --env-file .env --restart unless-stopped --name react -p 3000:3000 react
+                                '''
+                            }
+                        } catch (Exception e) {
+                            env.FRONTEND_BUILD_STATUS = 'FAILED'
+                            echo "❌ 프론트엔드 빌드 실패: ${e.message}"
+                            throw e
                         }
-                        dir('frontend') {
-                            sh '''
-                                                        set -e
-                        docker build -f Dockerfile -t vue .
-                        docker stop vue || true
-                        docker rm vue || true
-                        docker run -d --network mynet  --env-file .env --restart unless-stopped --name vue -p 3000:3000 vue
-
-                            '''
-                        }
-                    } catch (Exception e) {
-                        env.FRONTEND_BUILD_STATUS = 'FAILED'
-                        echo "❌ 프론트엔드 빌드 실패: ${e.message}"
-                        throw e
                     }
                 }
             }
