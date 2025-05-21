@@ -3,7 +3,7 @@ pipeline {
     parameters {
         string(name: 'ORIGINAL_BRANCH_NAME', defaultValue: 'master', description: '브랜치 이름')
         string(name: 'BRANCH_NAME', defaultValue: 'master', description: '브랜치 이름')
-        string(name: 'PROJECT_ID', defaultValue: '30', description: '프로젝트 ID')
+        string(name: 'PROJECT_ID', defaultValue: '35', description: '프로젝트 ID')
     }
     stages {
         stage('Checkout') {
