@@ -21,9 +21,4 @@ export default defineConfig({
       },
     },
   },
-  define: {
-    "import.meta.env.VITE_KAKAO_MAP_SERVICE_KEY": JSON.stringify("0ef59022ef9db30bfeab7c47c898ee95"),
-    "import.meta.env.VITE_VUE_API_URL": JSON.stringify("https://kgapt.store"),
-    "import.meta.env.VITE_REDIRECT_URI": JSON.stringify("https://kgapt.store/oauth/redirect"),
-  },
 });
