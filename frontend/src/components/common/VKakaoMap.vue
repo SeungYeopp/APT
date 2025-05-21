@@ -26,9 +26,7 @@ const loadKakaoMapScript = async () => {
 
   return new Promise((resolve) => {
     const script = document.createElement("script");
-    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${
-      import.meta.env.VITE_KAKAO_MAP_SERVICE_KEY
-    }&libraries=services,clusterer`;
+    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=0ef59022ef9db30bfeab7c47c898ee95&libraries=services,clusterer`;
     script.onload = () => kakao.maps.load(resolve);
     document.head.appendChild(script);
   });
