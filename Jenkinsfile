@@ -3,7 +3,7 @@ pipeline {
     parameters {
         string(name: 'ORIGINAL_BRANCH_NAME', defaultValue: 'master', description: '브랜치 이름')
         string(name: 'BRANCH_NAME', defaultValue: 'master', description: '브랜치 이름')
-        string(name: 'PROJECT_ID', defaultValue: '38', description: '프로젝트 ID')
+        string(name: 'PROJECT_ID', defaultValue: '48', description: '프로젝트 ID')
     }
     stages {
         stage('Checkout') {
@@ -109,10 +109,11 @@ pipeline {
                             dir('frontend') {
                                 sh '''
                                     set -e
-                                    docker build -f Dockerfile -t react .
-                                    docker stop react || true
-                                    docker rm react || true
-                                    docker run -d --network mynet --env-file .env --restart unless-stopped --name react -p 3000:3000 react
+docker build -f Dockerfile -t vue .
+docker stop vue || true
+docker rm vue || true
+docker run -d --network mynet --env-file .env --restart unless-stopped --name vue -p 3000:3000 vue
+
                                 '''
                             }
                         } catch (Exception e) {
