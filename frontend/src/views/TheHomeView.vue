@@ -350,48 +350,42 @@ const filterCriteria = ref(""); // 필터 기준 저장
 const filterYearCriteria = ref(""); // 건축 연도 필터 기준 저장
 const filterPriceCriteria = ref(""); // 가격 필터 기준 저장
 const filteredAptList = computed(() => {
-  if (aptList.value.length === 0) {
-    return [];
-  }
-  // 필터 조건에 따라 aptList 필터링
+  if (!Array.isArray(aptList.value)) return [];
+
   return aptList.value.filter((apt) => {
-    const area = parseFloat(apt.exclusiveArea); // exclusiveArea 값 가져오기
-    const buildYear = parseInt(apt.buildYear); // 건축 연도 값 가져오기
-    const price = parseInt(apt.recentDealAmount.replace(/,/g, "")); // 최근 거래 가격 변환
+    const area = parseFloat(apt.exclusiveArea);
+    const buildYear = parseInt(apt.buildYear);
+    const price = parseInt(apt.recentDealAmount.replace(/,/g, ""));
 
-    // 평수 필터 조건
-    if (filterCriteria.value === "small" && area > 99) return false; // 30평 이하
+    if (filterCriteria.value === "small" && area > 99) return false;
     if (filterCriteria.value === "medium" && (area <= 99 || area > 165))
-      return false; // 30-50평
-    if (filterCriteria.value === "large" && area <= 165) return false; // 50평 이상
+      return false;
+    if (filterCriteria.value === "large" && area <= 165) return false;
 
-    // 건축 연도 필터 조건
-    if (filterYearCriteria.value === "recent" && buildYear < 2010) return false; // 2010년 이후
-    if (filterYearCriteria.value === "old" && buildYear >= 2010) return false; // 2010년 이전
+    if (filterYearCriteria.value === "recent" && buildYear < 2010) return false;
+    if (filterYearCriteria.value === "old" && buildYear >= 2010) return false;
 
-    // 가격 필터 조건
-    if (filterPriceCriteria.value === "below5" && price > 50000) return false; // 5억 이하
+    if (filterPriceCriteria.value === "below5" && price > 50000) return false;
     if (
       filterPriceCriteria.value === "5to10" &&
       (price <= 50000 || price > 100000)
     )
-      return false; // 5억 ~ 10억
+      return false;
     if (
       filterPriceCriteria.value === "10to20" &&
       (price <= 100000 || price > 200000)
     )
-      return false; // 10억 ~ 20억
+      return false;
     if (
       filterPriceCriteria.value === "20to50" &&
       (price <= 200000 || price > 500000)
     )
-      return false; // 20억 ~ 50억
+      return false;
     if (filterPriceCriteria.value === "above50" && price <= 500000)
-      return false; // 50억 이상
+      return false;
 
     hideDealList();
-
-    return true; // 모든 조건을 만족하면 반환
+    return true;
   });
 });
 
