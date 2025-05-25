@@ -15,7 +15,9 @@ const router = useRouter();
 const userReviews = ref([]);
 const visibleReviews = ref([]); // 현재 보여지는 리뷰 리스트
 let currentIndex = 0; // 캐러셀 현재 인덱스
-const profileImage = ref(user?.profileImage || "http://localhost:5173/src/img/default.jpg"); // 기본 이미지 또는 유저 이미지
+const profileImage = ref(
+  user?.profileImage || "http://localhost:5173/src/img/default.jpg"
+); // 기본 이미지 또는 유저 이미지
 const isRegular = ref(false); // loginType이 REGULAR인지 여부
 const bookmarkedCount = ref(0);
 const inquiryCount = ref(0);
@@ -25,9 +27,9 @@ const reviewStats = computed(() => {
   const averageRating =
     reviewCount > 0
       ? (
-        userReviews.value.reduce((sum, review) => sum + review.rating, 0) /
-        reviewCount
-      ).toFixed(2)
+          userReviews.value.reduce((sum, review) => sum + review.rating, 0) /
+          reviewCount
+        ).toFixed(2)
       : "0.00";
   return { reviewCount, averageRating };
 });
@@ -78,7 +80,8 @@ const next = () => {
 // Move to the previous review
 const prev = () => {
   if (userReviews.value.length >= 3) {
-    currentIndex = (currentIndex - 1 + userReviews.value.length) % userReviews.value.length; // 인덱스 감소
+    currentIndex =
+      (currentIndex - 1 + userReviews.value.length) % userReviews.value.length; // 인덱스 감소
     updateVisibleReviews();
   }
 };
@@ -105,19 +108,18 @@ const getStarImage = (star, rating) => {
 
   if (star <= Math.floor(rating)) {
     // 채워진 별
-    path = new URL('@/components/icon/starFilled.png', import.meta.url).href;
+    path = new URL("@/components/icon/starFilled.png", import.meta.url).href;
   } else if (star - 1 < rating && rating < star) {
     // 반쪽 별
-    path = new URL('@/components/icon/starHalf.png', import.meta.url).href;
+    path = new URL("@/components/icon/starHalf.png", import.meta.url).href;
   } else {
     // 빈 별
-    path = new URL('@/components/icon/starEmpty.png', import.meta.url).href;
+    path = new URL("@/components/icon/starEmpty.png", import.meta.url).href;
   }
 
   //console.log("Image Path:", path);
   return path;
 };
-
 
 const fetchUserProfile = async () => {
   if (!user) return;
@@ -129,21 +131,19 @@ const fetchUserProfile = async () => {
 
     // loginType에 따라 프로필 이미지 설정
     if (isRegular.value) {
-      profileImage.value =
-        response.data.profileImage
-          ? `http://localhost:8080${response.data.profileImage}`
-          : "http://localhost:5173/src/img/default.jpg"; // 기본 이미지 경로
+      profileImage.value = response.data.profileImage
+        ? `${import.meta.env.VITE_VUE_API_URL}${response.data.profileImage}`
+        : "http://localhost:5173/src/img/default.jpg"; // 기본 이미지 경로
     } else {
       // 소셜 로그인일 경우 profileImage를 그대로 사용
       profileImage.value =
-        response.data.profileImage || "http://localhost:5173/src/img/default.jpg"; // 기본 경로
+        response.data.profileImage ||
+        "http://localhost:5173/src/img/default.jpg"; // 기본 경로
     }
   } catch (error) {
     console.error("Failed to fetch user profile:", error);
   }
 };
-
-
 
 const handleProfileImageUpload = async (event) => {
   const file = event.target.files[0];
@@ -153,11 +153,15 @@ const handleProfileImageUpload = async (event) => {
   formData.append("file", file);
 
   try {
-    const response = await apiClient.post(`/user/profile-image/${user.id}`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await apiClient.post(
+      `/user/profile-image/${user.id}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
 
     // 서버에서 반환된 파일 이름 사용
     console.log(response.data);
@@ -165,7 +169,7 @@ const handleProfileImageUpload = async (event) => {
     const fileName = response.data.profileImage;
     if (!fileName) throw new Error("File name is undefined or empty");
 
-    profileImage.value = `http://localhost:8080${fileName}`;
+    profileImage.value = `${import.meta.env.VITE_VUE_API_URL}${fileName}`;
     console.log("Updated profile image URL:", profileImage.value);
   } catch (error) {
     console.error("Failed to upload profile image:", error);
@@ -216,8 +220,6 @@ const updateUserInfo = async () => {
   }
 };
 
-
-
 const fetchUser = async () => {
   if (!user.value) return; // 사용자 정보가 없으면 요청하지 않음
   try {
@@ -234,8 +236,6 @@ const goToAIPage = () => {
   router.push({ name: "aichat" });
 };
 
-
-
 // 모달 상태
 const isModalOpen = ref(false);
 
@@ -248,7 +248,6 @@ const openModal = () => {
 const closeModal = () => {
   isModalOpen.value = false;
 };
-
 </script>
 
 <template>
@@ -261,8 +260,15 @@ const closeModal = () => {
         <div class="profile-image-container">
           <img :src="profileImage" alt="Profile Image" class="profile-image" />
           <div v-if="isRegular">
-            <input type="file" id="profile-upload" class="profile-upload" @change="handleProfileImageUpload" />
-            <label for="profile-upload" class="upload-button">프로필 수정</label>
+            <input
+              type="file"
+              id="profile-upload"
+              class="profile-upload"
+              @change="handleProfileImageUpload"
+            />
+            <label for="profile-upload" class="upload-button"
+              >프로필 수정</label
+            >
           </div>
         </div>
 
@@ -289,30 +295,43 @@ const closeModal = () => {
             <p>문의 내역 개수: {{ inquiryCount }}</p>
           </div>
         </div>
-        
       </div>
     </section>
-
-
 
     <div v-if="isModalOpen" class="modal-overlay" @click.self="closeModal">
       <div class="modal-content">
         <h2>정보 수정</h2>
         <label>
           <strong>새 닉네임:</strong>
-          <input type="text" v-model="updatedNickname" placeholder="새 닉네임" />
+          <input
+            type="text"
+            v-model="updatedNickname"
+            placeholder="새 닉네임"
+          />
         </label>
         <label>
           <strong>현재 비밀번호:</strong>
-          <input type="password" v-model="currentPassword" placeholder="현재 비밀번호" />
+          <input
+            type="password"
+            v-model="currentPassword"
+            placeholder="현재 비밀번호"
+          />
         </label>
         <label>
           <strong>새 비밀번호:</strong>
-          <input type="password" v-model="newPassword" placeholder="새 비밀번호" />
+          <input
+            type="password"
+            v-model="newPassword"
+            placeholder="새 비밀번호"
+          />
         </label>
         <label>
           <strong>새 비밀번호 확인:</strong>
-          <input type="password" v-model="confirmPassword" placeholder="새 비밀번호 확인" />
+          <input
+            type="password"
+            v-model="confirmPassword"
+            placeholder="새 비밀번호 확인"
+          />
         </label>
         <div class="button-group">
           <button @click="updateUserInfo" class="save-button">저장</button>
@@ -329,14 +348,25 @@ const closeModal = () => {
       <div class="review-body">
         <!-- 리뷰 캐러셀 -->
         <div v-if="visibleReviews.length" class="review-carousel">
-          <button v-if="userReviews.length >= 3" @click="prev" class="carousel-button left">
+          <button
+            v-if="userReviews.length >= 3"
+            @click="prev"
+            class="carousel-button left"
+          >
             ◀
           </button>
 
           <!-- 리뷰 카드 -->
-          <div class="review-card" v-for="review in visibleReviews" :key="review.reviewId">
+          <div
+            class="review-card"
+            v-for="review in visibleReviews"
+            :key="review.reviewId"
+          >
             <div v-if="review.imageUrl" class="review-image">
-              <img :src="`http://localhost:8080${review.imageUrl}`" alt="리뷰 이미지" />
+              <img
+                :src="`${import.meta.env.VITE_VUE_API_URL}${review.imageUrl}`"
+                alt="리뷰 이미지"
+              />
             </div>
             <div class="review-content">
               <p class="content">{{ review.content }}</p>
@@ -344,7 +374,11 @@ const closeModal = () => {
 
             <div class="rating">
               <span v-for="star in 5" :key="star" class="star">
-                <img :src="getStarImage(star, review.rating)" alt="star" class="star-icon" />
+                <img
+                  :src="getStarImage(star, review.rating)"
+                  alt="star"
+                  class="star-icon"
+                />
               </span>
             </div>
             <div class="review-footer">
@@ -352,14 +386,18 @@ const closeModal = () => {
                 <span class="user-nickname">{{ review.houseInfos.aptNm }}</span>
                 <!-- <span class="user-nickname">{{ review.user.nickname }}</span> -->
               </div>
-              
+
               <p class="review-time">
                 {{ new Date(review.time).toLocaleDateString() }}
               </p>
             </div>
           </div>
 
-          <button v-if="userReviews.length >= 3" @click="next" class="carousel-button right">
+          <button
+            v-if="userReviews.length >= 3"
+            @click="next"
+            class="carousel-button right"
+          >
             ▶
           </button>
         </div>
@@ -371,7 +409,6 @@ const closeModal = () => {
     </section>
   </div>
 </template>
-
 
 <style scoped>
 .modal-overlay {
@@ -431,7 +468,7 @@ const closeModal = () => {
 
 .edit-section {
   display: flex;
-  justify-content: center;;
+  justify-content: center;
   gap: 20px;
 }
 
@@ -481,7 +518,6 @@ const closeModal = () => {
   padding: 60px;
   border-radius: 8px;
   border: 1px solid #ddd;
-  
 }
 
 .user-info-container {
@@ -491,7 +527,6 @@ const closeModal = () => {
   gap: 30px;
   width: 100%;
 }
-
 
 .user-info-section h1 {
   font-size: 2rem;
@@ -569,7 +604,7 @@ const closeModal = () => {
 
 .user-review-header {
   width: 100%;
-  padding-left: 25px
+  padding-left: 25px;
 }
 
 .user-reviews-section h1 {
@@ -786,5 +821,4 @@ const closeModal = () => {
 .edit-button:hover {
   background-color: #19171606;
 }
-
 </style>

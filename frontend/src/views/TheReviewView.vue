@@ -9,7 +9,9 @@ let currentIndex = 0; // 캐러셀 현재 인덱스
 // Fetch high-rating reviews from API
 const fetchHighRatingReviews = async () => {
   try {
-    const response = await axios.get("http://localhost:8080/review/high-rating"); // API 호출
+    const response = await axios.get(
+      `${import.meta.env.VITE_VUE_API_URL}/review/high-rating`
+    ); // API 호출
     reviews.value = response.data;
     updateVisibleReviews();
   } catch (error) {
@@ -44,7 +46,8 @@ const next = () => {
 // Move to the previous review
 const prev = () => {
   if (reviews.value.length >= 3) {
-    currentIndex = (currentIndex - 1 + reviews.value.length) % reviews.value.length; // 인덱스 감소
+    currentIndex =
+      (currentIndex - 1 + reviews.value.length) % reviews.value.length; // 인덱스 감소
     updateVisibleReviews();
   }
 };
@@ -59,29 +62,25 @@ const getStarImage = (star, rating) => {
 
   if (star <= Math.floor(rating)) {
     // 채워진 별
-    path = new URL('@/components/icon/starFilled.png', import.meta.url).href;
+    path = new URL("@/components/icon/starFilled.png", import.meta.url).href;
   } else if (star - 1 < rating && rating < star) {
     // 반쪽 별
-    path = new URL('@/components/icon/starHalf.png', import.meta.url).href;
+    path = new URL("@/components/icon/starHalf.png", import.meta.url).href;
   } else {
     // 빈 별
-    path = new URL('@/components/icon/starEmpty.png', import.meta.url).href;
+    path = new URL("@/components/icon/starEmpty.png", import.meta.url).href;
   }
 
   //console.log("Image Path:", path);
   return path;
 };
-
 </script>
-
 
 <template>
   <div class="review-container">
-    <div style="margin-bottom: 35px; text-align: center;">
+    <div style="margin-bottom: 35px; text-align: center">
       <h1 class="fw-bold">평점 높은 아파트 리뷰</h1>
-      <p class="text-muted">
-        실사용자가 남긴 아파트별 리뷰를 확인해보세요.
-      </p>
+      <p class="text-muted">실사용자가 남긴 아파트별 리뷰를 확인해보세요.</p>
     </div>
     <div class="review-body">
       <!-- 리뷰 캐러셀 -->
@@ -102,14 +101,14 @@ const getStarImage = (star, rating) => {
         >
           <div v-if="review.imageUrl" class="review-image">
             <img
-              :src="`http://localhost:8080${review.imageUrl}`"
+              :src="`${import.meta.env.VITE_VUE_API_URL}${review.imageUrl}`"
               alt="리뷰 이미지"
             />
           </div>
           <div class="review-content">
             <p class="content">{{ review.content }}</p>
           </div>
-          
+
           <div class="rating">
             <span v-for="star in 5" :key="star" class="star">
               <img
@@ -121,7 +120,10 @@ const getStarImage = (star, rating) => {
           </div>
           <div class="review-footer">
             <div class="user-info">
-              <span class="user-nickname">{{ review.user.nickname }} / {{  review.houseInfos.aptNm }}</span>
+              <span class="user-nickname"
+                >{{ review.user.nickname }} /
+                {{ review.houseInfos.aptNm }}</span
+              >
             </div>
             <p class="review-time">
               {{ new Date(review.time).toLocaleDateString() }}
@@ -142,8 +144,6 @@ const getStarImage = (star, rating) => {
     <img class="footer-img" src="@/img/Saly-16.png" alt="img" />
   </div>
 </template>
-
-
 
 <style scoped>
 /* 전체 컨테이너 */
@@ -316,7 +316,7 @@ h1 {
   width: 100%;
   max-height: 130px;
 }
-.review-image img{
+.review-image img {
   width: 100%;
   height: 100%;
   text-align: center;

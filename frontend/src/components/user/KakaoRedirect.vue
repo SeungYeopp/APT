@@ -19,8 +19,10 @@ export default {
     }
 
     const syncLocalStorageToDB = async () => {
-      const localData = JSON.parse(localStorage.getItem("recentApartments")) || [];
-      const localData2 = JSON.parse(localStorage.getItem("recentNeighborhoods")) || [];
+      const localData =
+        JSON.parse(localStorage.getItem("recentApartments")) || [];
+      const localData2 =
+        JSON.parse(localStorage.getItem("recentNeighborhoods")) || [];
 
       try {
         const payload = localData.map((item) => ({
@@ -56,11 +58,10 @@ export default {
       }
     };
 
-
     const sendAuthCodeToBackend = async (code) => {
       try {
         const response = await axios.post(
-          "http://localhost:8080/oauth/auth",
+          "${import.meta.env.VITE_VUE_API_URL}/oauth/auth",
           { code },
           { withCredentials: true }
         );
@@ -81,7 +82,10 @@ export default {
         // Navigate to the main page
         router.push({ name: "main" });
       } catch (error) {
-        console.error("Failed to authenticate:", error.response?.data || error.message);
+        console.error(
+          "Failed to authenticate:",
+          error.response?.data || error.message
+        );
         alert("로그인에 실패했습니다. 다시 시도해주세요."); // User-friendly error message
       }
     };

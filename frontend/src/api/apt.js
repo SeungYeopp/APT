@@ -1,8 +1,8 @@
 import axios from "@/util/axios-common";
 
 function getAptListByArea(location, success, fail) {
-  let url = '';
-  url = `http://localhost:8080/apt/area/${location}`
+  let url = "";
+  url = `${import.meta.env.VITE_VUE_API_URL}/apt/area/${location}`;
   axios.get(url).then(success).catch(fail);
 }
 
@@ -27,4 +27,10 @@ function getDongCodeByDetails(sidoName, gugunName, dongName, success, fail) {
     .catch(fail);
 }
 
-export { getAptListByArea, getAptListByKeyword, getAptDeal, getDongCodeByName, getDongCodeByDetails };
+export {
+  getAptListByArea,
+  getAptListByKeyword,
+  getAptDeal,
+  getDongCodeByName,
+  getDongCodeByDetails,
+};

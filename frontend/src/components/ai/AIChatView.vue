@@ -1,15 +1,15 @@
 <script>
 import axios from "axios";
-import MarkdownIt from 'markdown-it';
+import MarkdownIt from "markdown-it";
 
-import { getDongCodeByDetails } from "@/api/apt.js"
+import { getDongCodeByDetails } from "@/api/apt.js";
 
 export default {
   name: "AIChatView",
   data() {
     return {
       typingIndicator: null, // AI 타이핑 인디케이터 메시지
-      typingDots: '', // 점점점 애니메이션을 위한 변수
+      typingDots: "", // 점점점 애니메이션을 위한 변수
       typingInterval: null, // 타이핑 애니메이션을 위한 타이머
       userId: "", // 로그인된 유저 ID
       nickname: "", // 로그인된 유저 닉네임
@@ -25,9 +25,12 @@ export default {
       this.nickname = user.nickname;
 
       try {
-        const response = await axios.post("http://localhost:8080/ai/chat", {
-          userId: this.userId,
-        });
+        const response = await axios.post(
+          `${import.meta.env.VITE_VUE_API_URL}/ai/chat`,
+          {
+            userId: this.userId,
+          }
+        );
 
         if (response.data.dialogueHistory) {
           // system 메시지 제외 및 메시지 리스트 업데이트
@@ -42,7 +45,7 @@ export default {
       } catch (error) {
         console.error("Error fetching chat history:", error);
       }
-    
+
       // 로컬 스토리지에서 추천 불러오기
       const storedRecommendations = this.getRecommendations(this.userId);
 
@@ -52,7 +55,10 @@ export default {
           text: type === "neighborhood" ? "추천 동네:" : "추천 아파트:",
           sender: "ai",
           nickname: "AI",
-          recommendations: type === "neighborhood" ? { neighborhood: data } : { apartments: data },
+          recommendations:
+            type === "neighborhood"
+              ? { neighborhood: data }
+              : { apartments: data },
         };
         this.messages.splice(index, 0, recommendationMessage); // 원래 위치에 삽입
       });
@@ -86,7 +92,7 @@ export default {
 
       // 타이핑 인디케이터 메시지 추가
       this.typingIndicator = {
-        text: '', // 초기에는 빈 문자열
+        text: "", // 초기에는 빈 문자열
         sender: "ai",
         nickname: "AI",
       };
@@ -97,7 +103,7 @@ export default {
       // AI 응답 요청
       try {
         const response = await axios.post(
-          "http://localhost:8080/ai/chat",
+          `${import.meta.env.VITE_VUE_API_URL}/ai/chat`,
           requestData,
           {
             headers: { "Content-Type": "application/json" },
@@ -113,10 +119,14 @@ export default {
         this.scrollToBottom();
 
         // 추천 목록 처리
-        const { neighborhoodRecommendations, apartmentRecommendations } = response.data;
+        const { neighborhoodRecommendations, apartmentRecommendations } =
+          response.data;
         console.log("전체 데이터: ", response.data);
 
-        if (neighborhoodRecommendations && Object.keys(neighborhoodRecommendations).length > 0) {
+        if (
+          neighborhoodRecommendations &&
+          Object.keys(neighborhoodRecommendations).length > 0
+        ) {
           this.messages.push({
             text: "추천 동네:",
             sender: "ai",
@@ -127,7 +137,12 @@ export default {
           });
           const index = this.messages.length - 1;
           console.log("동네 추천:", neighborhoodRecommendations);
-          this.saveRecommendations(this.userId, neighborhoodRecommendations, null, index); // 아파트는 null로 저장
+          this.saveRecommendations(
+            this.userId,
+            neighborhoodRecommendations,
+            null,
+            index
+          ); // 아파트는 null로 저장
         }
 
         if (apartmentRecommendations && apartmentRecommendations.length > 0) {
@@ -141,9 +156,13 @@ export default {
           });
           const index = this.messages.length - 1;
           console.log("아파트 추천:", apartmentRecommendations);
-          this.saveRecommendations(this.userId, null, apartmentRecommendations, index); // 동네는 null로 저장
+          this.saveRecommendations(
+            this.userId,
+            null,
+            apartmentRecommendations,
+            index
+          ); // 동네는 null로 저장
         }
-
       } catch (error) {
         // 에러 발생 시 타이핑 애니메이션 중지 및 인디케이터 제거
         this.stopTypingAnimation();
@@ -161,16 +180,15 @@ export default {
 
       // 스크롤 최신화
       this.scrollToBottom();
-    }
-    ,
+    },
     startTypingAnimation() {
-      this.typingDots = '';
+      this.typingDots = "";
       if (this.typingInterval) clearInterval(this.typingInterval);
       this.typingInterval = setInterval(() => {
         if (this.typingDots.length >= 3) {
-          this.typingDots = '';
+          this.typingDots = "";
         } else {
-          this.typingDots += '.';
+          this.typingDots += ".";
         }
         if (this.typingIndicator) {
           this.typingIndicator.text = this.typingDots;
@@ -210,9 +228,14 @@ export default {
             const dongCode = response.data?.dongCd;
 
             if (dongCode) {
-              this.$router.push({ name: "home-list", params: { keyword: dongCode } });
+              this.$router.push({
+                name: "home-list",
+                params: { keyword: dongCode },
+              });
             } else {
-              alert("해당 동에 대한 정보를 찾을 수 없습니다. 다시 시도해주세요.");
+              alert(
+                "해당 동에 대한 정보를 찾을 수 없습니다. 다시 시도해주세요."
+              );
             }
           },
           (error) => {
@@ -227,7 +250,9 @@ export default {
     },
     // 로컬 스토리지에 추천 저장
     saveRecommendations(userId, neighborhood, apartments, index) {
-      const allRecommendations = JSON.parse(localStorage.getItem("recommendations") || "{}");
+      const allRecommendations = JSON.parse(
+        localStorage.getItem("recommendations") || "{}"
+      );
       const userRecommendations = allRecommendations[userId] || [];
 
       // 동네 추천 추가
@@ -249,20 +274,25 @@ export default {
       }
 
       allRecommendations[userId] = userRecommendations;
-      localStorage.setItem("recommendations", JSON.stringify(allRecommendations));
+      localStorage.setItem(
+        "recommendations",
+        JSON.stringify(allRecommendations)
+      );
     },
 
     // 로컬 스토리지에서 추천 불러오기
     getRecommendations(userId) {
       // 로컬 스토리지에서 데이터를 가져오고, 없을 경우 빈 객체로 초기화
-      const allRecommendations = JSON.parse(localStorage.getItem("recommendations")) || {};
+      const allRecommendations =
+        JSON.parse(localStorage.getItem("recommendations")) || {};
       const userRecommendations = allRecommendations[userId] || [];
       // 특정 사용자에 대한 추천 목록이 없으면 기본값 제공
-      return Array.isArray(userRecommendations) ? userRecommendations : { neighborhood: null, apartments: [] };
-    }
+      return Array.isArray(userRecommendations)
+        ? userRecommendations
+        : { neighborhood: null, apartments: [] };
+    },
   },
 };
-
 </script>
 
 <template>
@@ -273,31 +303,65 @@ export default {
     <div class="chat-container">
       <!-- 채팅 메시지 표시 영역 -->
       <div class="chat-messages" ref="messagesContainer">
-        <div v-for="(message, index) in messages" :key="index"
-          :class="['message', message.sender === 'user' ? 'user-message' : 'ai-message']">
+        <div
+          v-for="(message, index) in messages"
+          :key="index"
+          :class="[
+            'message',
+            message.sender === 'user' ? 'user-message' : 'ai-message',
+          ]"
+        >
           <div class="message-content">
             <!-- 추천 메시지 -->
             <div v-if="message.recommendations" class="recommendations-list">
               <!-- 동네 추천 -->
-              <div v-for="(rec, recIndex) in message.recommendations.neighborhood" :key="recIndex" class="recommendation-item">
+              <div
+                v-for="(rec, recIndex) in message.recommendations.neighborhood"
+                :key="recIndex"
+                class="recommendation-item"
+              >
                 <div class="recommendation-text">
-                  <span><strong>{{ rec.dong_name }}</strong> ({{ rec.sido_name }} {{ rec.gugun_name }})</span>
+                  <span
+                    ><strong>{{ rec.dong_name }}</strong> ({{ rec.sido_name }}
+                    {{ rec.gugun_name }})</span
+                  >
                   <p>{{ rec.reason }}</p>
                 </div>
-                <button @click="searchDong(rec.sido_name, rec.gugun_name, rec.dong_name)" class="recommendation-button">
+                <button
+                  @click="
+                    searchDong(rec.sido_name, rec.gugun_name, rec.dong_name)
+                  "
+                  class="recommendation-button"
+                >
                   {{ rec.dong_name }} 검색
                 </button>
               </div>
 
               <!-- 아파트 추천 -->
               <div v-if="message.recommendations.apartments">
-                <div v-for="(apt, aptIndex) in message.recommendations.apartments" :key="aptIndex" class="recommendation-item">
+                <div
+                  v-for="(apt, aptIndex) in message.recommendations.apartments"
+                  :key="aptIndex"
+                  class="recommendation-item"
+                >
                   <div class="recommendation-text">
-                    <span><strong>{{ apt.apt_name }}</strong> ({{ apt.location }})</span>
+                    <span
+                      ><strong>{{ apt.apt_name }}</strong> ({{
+                        apt.location
+                      }})</span
+                    >
                     <p>{{ apt.price_range }}</p>
                     <p>{{ apt.reason }}</p>
                   </div>
-                  <button @click="$router.push({ name: 'home-list', params: { keyword: apt.apt_name }})" class="recommendation-button">
+                  <button
+                    @click="
+                      $router.push({
+                        name: 'home-list',
+                        params: { keyword: apt.apt_name },
+                      })
+                    "
+                    class="recommendation-button"
+                  >
                     {{ apt.apt_name }} 찾기
                   </button>
                 </div>
@@ -313,16 +377,18 @@ export default {
       <!-- 채팅 입력 영역 -->
       <div class="chat-input">
         <div class="input-container">
-          <input v-model="newMessage" type="text" placeholder="메시지를 입력하세요..." @keyup.enter="sendMessage" />
+          <input
+            v-model="newMessage"
+            type="text"
+            placeholder="메시지를 입력하세요..."
+            @keyup.enter="sendMessage"
+          />
           <button @click="sendMessage" class="send-button">전송</button>
         </div>
       </div>
     </div>
   </main>
-
 </template>
-
-
 
 <style scoped>
 main {
@@ -404,7 +470,6 @@ main {
   font-size: 14px;
 }
 
-
 /* 추천 항목 리스트 스타일 */
 .recommendations-list {
   margin-top: 15px;
@@ -471,7 +536,6 @@ main {
   margin-bottom: 0;
 }
 
-
 /* 메시지 정보 스타일 */
 .message-info {
   text-align: right;
@@ -521,7 +585,6 @@ main {
 .chat-input .send-button:hover {
   background-color: var(--eerie-grey);
 }
-
 
 .search-button {
   margin-left: 10px;

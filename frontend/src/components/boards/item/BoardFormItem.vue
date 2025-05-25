@@ -145,7 +145,7 @@ function updateArticle() {
 
 function sendEmail(emailData) {
   return new Promise((resolve, reject) => {
-    fetch("http://localhost:8080/board", {
+    fetch(`${import.meta.env.VITE_VUE_API_URL}/board`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -171,9 +171,6 @@ function sendEmail(emailData) {
   });
 }
 
-
-
-
 function moveList() {
   router.push({ name: "article-list" });
 }
@@ -187,11 +184,21 @@ function moveList() {
   <form v-else @submit.prevent="onSubmit">
     <div class="mb-3">
       <label for="userid" class="form-label">작성자 이름 : </label>
-      <input type="text" class="form-control" :value="article.userName" disabled />
+      <input
+        type="text"
+        class="form-control"
+        :value="article.userName"
+        disabled
+      />
     </div>
     <div class="mb-3">
       <label for="subject" class="form-label">제목 : </label>
-      <input type="text" class="form-control" v-model="article.subject" placeholder="제목을 입력하세요." />
+      <input
+        type="text"
+        class="form-control"
+        v-model="article.subject"
+        placeholder="제목을 입력하세요."
+      />
     </div>
     <div class="mb-3">
       <label for="content" class="form-label">내용 : </label>
@@ -203,17 +210,26 @@ function moveList() {
       ></textarea>
     </div>
     <div class="col-auto text-center">
-      <button type="submit" class="btn btn-outline-primary mb-3" v-if="type === 'regist'">
+      <button
+        type="submit"
+        class="btn btn-outline-primary mb-3"
+        v-if="type === 'regist'"
+      >
         글작성
       </button>
-      <button type="submit" class="btn btn-outline-success mb-3" v-else>글수정</button>
-      <button type="button" class="btn btn-outline-danger mb-3 ms-1" @click="moveList">
+      <button type="submit" class="btn btn-outline-success mb-3" v-else>
+        글수정
+      </button>
+      <button
+        type="button"
+        class="btn btn-outline-danger mb-3 ms-1"
+        @click="moveList"
+      >
         목록으로이동...
       </button>
     </div>
   </form>
 </template>
-
 
 <style scoped>
 .loading-overlay {
@@ -250,6 +266,4 @@ function moveList() {
   font-size: 1.2rem;
   color: #555;
 }
-
 </style>
-
