@@ -5,6 +5,7 @@ import Chart from "chart.js/auto";
 import { getAptDeal } from "@/api/apt.js";
 import ReviewModal from "./ReviewModal.vue";
 import axios from "@/util/axios-common.js";
+const baseUrl = import.meta.env.VITE_VUE_API_URL;
 
 const props = defineProps({
   apt: {
@@ -688,13 +689,9 @@ function formatReviewTime(timestamp) {
             <p class="review-text">{{ review.content }}</p>
             <div v-if="review.imageUrl" class="review-image">
               <img
-                :src="`${import.meta.env.VITE_VUE_API_URL}${review.imageUrl}`"
+                :src="`${baseUrl}${review.imageUrl}`"
                 alt="리뷰 이미지"
-                @click="
-                  openModal(
-                    `${import.meta.env.VITE_VUE_API_URL}${review.imageUrl}`
-                  )
-                "
+                @click="openModal(`${baseUrl}${review.imageUrl}`)"
                 class="review-thumbnail"
               />
             </div>

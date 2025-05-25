@@ -5,6 +5,7 @@ import apiClient from "@/util/axios-common.js";
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import UserInterest from "./UserInterest.vue";
+const baseUrl = import.meta.env.VITE_VUE_API_URL;
 
 const userStore = useUserStore();
 const { getUser } = storeToRefs(userStore);
@@ -363,10 +364,7 @@ const closeModal = () => {
             :key="review.reviewId"
           >
             <div v-if="review.imageUrl" class="review-image">
-              <img
-                :src="`${import.meta.env.VITE_VUE_API_URL}${review.imageUrl}`"
-                alt="리뷰 이미지"
-              />
+              <img :src="`${baseUrl}${review.imageUrl}`" alt="리뷰 이미지" />
             </div>
             <div class="review-content">
               <p class="content">{{ review.content }}</p>

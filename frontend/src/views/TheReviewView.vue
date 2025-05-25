@@ -6,6 +6,8 @@ const reviews = ref([]); // 리뷰 데이터
 const visibleReviews = ref([]); // 현재 보여지는 리뷰 리스트
 let currentIndex = 0; // 캐러셀 현재 인덱스
 
+const baseUrl = import.meta.env.VITE_VUE_API_URL;
+
 // Fetch high-rating reviews from API
 const fetchHighRatingReviews = async () => {
   try {
@@ -100,10 +102,7 @@ const getStarImage = (star, rating) => {
           :key="review.reviewId"
         >
           <div v-if="review.imageUrl" class="review-image">
-            <img
-              :src="`${import.meta.env.VITE_VUE_API_URL}${review.imageUrl}`"
-              alt="리뷰 이미지"
-            />
+            <img :src="`${baseUrl}${review.imageUrl}`" alt="리뷰 이미지" />
           </div>
           <div class="review-content">
             <p class="content">{{ review.content }}</p>
