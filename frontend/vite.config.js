@@ -15,7 +15,7 @@ export default defineConfig({
     port: 3000, // ✅ 포트 지정 (기본은 5173, 이걸 원하는 값으로 바꿔줌)
     proxy: {
       "/apt": {
-        target: "http://43.203.170.49:8080",
+        target: "http://localhost:8080",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/apt/, "/apt"),
       },
