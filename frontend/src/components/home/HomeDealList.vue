@@ -266,12 +266,13 @@ const fetchReviews = async () => {
 
 // 평균 평점 계산
 const averageRating = computed(() => {
-  if (!reviewList.value.length) return "평점 없음";
+  if (!Array.isArray(reviewList.value) || reviewList.value.length === 0)
+    return "평점 없음";
   const total = reviewList.value.reduce(
     (sum, review) => sum + review.rating,
     0
   );
-  return (total / reviewList.value.length).toFixed(1); // 소수점 1자리까지
+  return (total / reviewList.value.length).toFixed(1);
 });
 
 // 평점을 별 이미지로 변환
@@ -399,7 +400,16 @@ function renderChart(dealData) {
 
   const { labels, dealCounts, avgPrices } = processData(dealData);
 
-  const ctx = document.getElementById("dealChart").getContext("2d");
+  const canvas = document.getElementById("dealChart");
+
+  // 🛡️ 캔버스 존재 여부 확인
+  if (!canvas) {
+    console.error("dealChart 캔버스 요소가 존재하지 않습니다.");
+    return;
+  }
+
+  const ctx = canvas.getContext("2d");
+
   chartInstance = new Chart(ctx, {
     type: "bar",
     data: {
@@ -408,37 +418,34 @@ function renderChart(dealData) {
         {
           label: "거래 수",
           data: dealCounts,
-          backgroundColor: "rgba(54, 162, 235, 0.5)", // 파란색 반투명
-          borderColor: "rgba(54, 162, 235, 1)", // 파란색
+          backgroundColor: "rgba(54, 162, 235, 0.5)",
+          borderColor: "rgba(54, 162, 235, 1)",
           borderWidth: 1,
           yAxisID: "y-axis-dealCount",
-          barPercentage: 0.6, // 막대 너비 조정
+          barPercentage: 0.6,
         },
         {
           label: "평균 거래가",
           data: avgPrices,
           type: "line",
-          borderColor: "rgba(75, 192, 192, 1)", // 초록색
-          backgroundColor: "rgba(75, 192, 192, 0.2)", // 초록색 반투명
+          borderColor: "rgba(75, 192, 192, 1)",
+          backgroundColor: "rgba(75, 192, 192, 0.2)",
           borderWidth: 2,
-          pointRadius: 3, // 데이터 포인트 크기
-          pointBackgroundColor: "rgba(75, 192, 192, 1)", // 데이터 포인트 색상
+          pointRadius: 3,
+          pointBackgroundColor: "rgba(75, 192, 192, 1)",
           yAxisID: "y-axis-avgPrice",
         },
       ],
     },
     options: {
       responsive: true,
-      maintainAspectRatio: false, // 반응형 높이 조정
+      maintainAspectRatio: false,
       plugins: {
         legend: {
-          position: "top", // 범례 위치
+          position: "top",
           labels: {
-            font: {
-              size: 14,
-              family: "Pretendard",
-            },
-            color: "#333", // 범례 글씨 색상
+            font: { size: 14, family: "Pretendard" },
+            color: "#333",
           },
         },
         tooltip: {
@@ -446,12 +453,12 @@ function renderChart(dealData) {
             label: function (context) {
               let value = context.raw;
               if (context.dataset.label === "평균 거래가") {
-                value = value.toLocaleString() + " 원"; // 천단위 콤마 추가
+                value = value.toLocaleString() + " 원";
               }
               return `${context.dataset.label}: ${value}`;
             },
           },
-          backgroundColor: "rgba(0, 0, 0, 0.8)", // 툴팁 배경색
+          backgroundColor: "rgba(0, 0, 0, 0.8)",
           titleFont: { size: 14, family: "Pretendard", weight: "bold" },
           bodyFont: { size: 12, family: "Pretendard" },
           padding: 10,
@@ -461,9 +468,7 @@ function renderChart(dealData) {
         "y-axis-dealCount": {
           type: "linear",
           position: "left",
-          grid: {
-            color: "rgba(200, 200, 200, 0.3)", // 연한 그리드선
-          },
+          grid: { color: "rgba(200, 200, 200, 0.3)" },
           title: {
             display: true,
             text: "거래 수",
@@ -473,17 +478,15 @@ function renderChart(dealData) {
           ticks: {
             font: { size: 12 },
             color: "#333",
-            stepSize: 1, // 눈금 간격을 1로 설정
-            beginAtZero: true, // 0에서 시작
+            stepSize: 1,
+            beginAtZero: true,
           },
-          suggestedMax: Math.max(...dealCounts) + 1, // 최대값보다 2 높게 설정
+          suggestedMax: Math.max(...dealCounts, 1) + 1,
         },
         "y-axis-avgPrice": {
           type: "linear",
           position: "right",
-          grid: {
-            drawOnChartArea: false, // 오른쪽 눈금선 비활성화
-          },
+          grid: { drawOnChartArea: false },
           title: {
             display: true,
             text: "평균 거래가 (천원)",
@@ -493,18 +496,13 @@ function renderChart(dealData) {
           ticks: {
             font: { size: 12 },
             color: "#333",
-            callback: (value) => value.toLocaleString(), // 천단위 콤마
+            callback: (value) => value.toLocaleString(),
           },
-          suggestedMax: Math.max(...avgPrices) + 1,
+          suggestedMax: Math.max(...avgPrices, 1) + 1,
         },
         x: {
-          grid: {
-            color: "rgba(200, 200, 200, 0.3)", // 연한 그리드선
-          },
-          ticks: {
-            font: { size: 12 },
-            color: "#333",
-          },
+          grid: { color: "rgba(200, 200, 200, 0.3)" },
+          ticks: { font: { size: 12 }, color: "#333" },
         },
       },
     },
@@ -675,7 +673,7 @@ function formatReviewTime(timestamp) {
           class="review-card"
         >
           <div class="review-header">
-            <h4>{{ review.user.nickname }}</h4>
+            <h4>{{ review.user?.nickname || "익명" }}</h4>
             <div class="review-stars">
               <img
                 v-for="(star, index) in generateStars(review.rating)"
