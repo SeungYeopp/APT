@@ -45,7 +45,9 @@ onMounted(async () => {
       // 초기 동 코드로 설정
       await initializeLocation("11", "11680", "1168010100");
       AptListInArea("1168010100");
-    } else { AptListInArea(searchDong.value); }
+    } else {
+      AptListInArea(searchDong.value);
+    }
   } else {
     if (keyword && keyword.length === 10) {
       const sidoCode = keyword.substring(0, 2);
@@ -55,8 +57,6 @@ onMounted(async () => {
       console.log(sidoCode);
       console.log(gugunCode);
       console.log(dongCode);
-
-
 
       await initializeLocation(sidoCode, gugunCode, dongCode);
       saveKeywordToLocalStorage(keyword); // LocalStorage에 저장
@@ -113,10 +113,17 @@ const updateGugunList = async (sidoCode, callback) => {
     { sido: sidoCode },
     ({ data }) => {
       gugunList.value = [{ text: "구군선택", value: "" }];
-      data.forEach((gugun) => {
-        gugunList.value.push({ text: gugun.gugunName, value: gugun.gugunCode });
-      });
-      if (callback) callback(); // 콜백 호출
+      if (Array.isArray(data)) {
+        data.forEach((gugun) => {
+          gugunList.value.push({
+            text: gugun.gugunName,
+            value: gugun.gugunCode,
+          });
+        });
+      } else {
+        console.warn("Unexpected Gugun response format:", data);
+      }
+      if (callback) callback();
     },
     (err) => {
       console.error("Failed to fetch Gugun list:", err);
@@ -128,18 +135,24 @@ const updateDongList = async (gugunCode) => {
   await listDong(
     { gugun: gugunCode },
     ({ data }) => {
-      dongList.value = [{ text: "동선택", value: "" }]; // 기본 선택지 추가
-      data.forEach((dong) => {
-        dongList.value.push({ text: dong.dongName, value: dong.dongCd });
-      });
-      console.log("Dong list updated:", dongList.value); // 디버깅용 로그
+      dongList.value = [{ text: "동선택", value: "" }];
+      if (Array.isArray(data)) {
+        data.forEach((dong) => {
+          dongList.value.push({
+            text: dong.dongName,
+            value: dong.dongCd,
+          });
+        });
+        console.log("Dong list updated:", dongList.value);
+      } else {
+        console.warn("Unexpected Dong response format:", data);
+      }
     },
     (err) => {
       console.error("Failed to fetch Dong list:", err);
     }
   );
 };
-
 
 function toMysqlDatetime(isoString) {
   const date = new Date(isoString);
@@ -167,8 +180,11 @@ const saveKeywordToLocalStorage = async (keyword) => {
     }
   } else {
     // 유저가 존재하지 않으면 LocalStorage에 저장
-    let recentNeighborhoods = JSON.parse(localStorage.getItem("recentNeighborhoods")) || [];
-    const existingIndex = recentNeighborhoods.findIndex((item) => item.dongCd === keyword);
+    let recentNeighborhoods =
+      JSON.parse(localStorage.getItem("recentNeighborhoods")) || [];
+    const existingIndex = recentNeighborhoods.findIndex(
+      (item) => item.dongCd === keyword
+    );
 
     if (existingIndex > -1) {
       // 이미 존재하면 가장 최근으로 이동
@@ -180,11 +196,13 @@ const saveKeywordToLocalStorage = async (keyword) => {
     if (recentNeighborhoods.length > 10) {
       recentNeighborhoods.pop();
     }
-    localStorage.setItem("recentNeighborhoods", JSON.stringify(recentNeighborhoods));
+    localStorage.setItem(
+      "recentNeighborhoods",
+      JSON.stringify(recentNeighborhoods)
+    );
     console.log("로컬 스토리지에 저장되었습니다:", recentNeighborhoods);
   }
 };
-
 
 const searchAptList = async (keyword) => {
   getAptListByKeyword(
@@ -216,10 +234,13 @@ const getSidoList = async (callback) => {
   await listSido(
     ({ data }) => {
       sidoList.value = [{ text: "시도선택", value: "" }];
-      data.forEach((sido) => {
-        sidoList.value.push({ text: sido.sidoName, value: sido.sidoCode });
-      });
-      if (callback) callback(); // 콜백 호출
+      if (Array.isArray(data)) {
+        data.forEach((sido) => {
+          sidoList.value.push({ text: sido.sidoName, value: sido.sidoCode });
+        });
+      } else {
+        console.warn("Unexpected Sido response format:", data);
+      }
     },
     (err) => {
       console.error("Failed to fetch Sido list:", err);
@@ -246,7 +267,10 @@ const onChangeSido = (val) => {
       ({ data }) => {
         gugunList.value = [{ text: "구군선택", value: "" }];
         data.forEach((gugun) => {
-          gugunList.value.push({ text: gugun.gugunName, value: gugun.gugunCode });
+          gugunList.value.push({
+            text: gugun.gugunName,
+            value: gugun.gugunCode,
+          });
         });
       },
       (err) => {
@@ -255,7 +279,6 @@ const onChangeSido = (val) => {
     );
   }
 };
-
 
 // 구군 선택 시
 const onChangeGugun = (val) => {
@@ -313,12 +336,10 @@ const fetchAptList = async (val) => {
   );
 };
 
-
 function clickApt(apt) {
   selectedApt.value = apt;
   showList.value = true;
   console.log("Selected Apt:", selectedApt.value);
-
 }
 
 function hideDealList() {
@@ -329,7 +350,6 @@ const filterCriteria = ref(""); // 필터 기준 저장
 const filterYearCriteria = ref(""); // 건축 연도 필터 기준 저장
 const filterPriceCriteria = ref(""); // 가격 필터 기준 저장
 const filteredAptList = computed(() => {
-
   if (aptList.value.length === 0) {
     return [];
   }
@@ -341,7 +361,8 @@ const filteredAptList = computed(() => {
 
     // 평수 필터 조건
     if (filterCriteria.value === "small" && area > 99) return false; // 30평 이하
-    if (filterCriteria.value === "medium" && (area <= 99 || area > 165)) return false; // 30-50평
+    if (filterCriteria.value === "medium" && (area <= 99 || area > 165))
+      return false; // 30-50평
     if (filterCriteria.value === "large" && area <= 165) return false; // 50평 이상
 
     // 건축 연도 필터 조건
@@ -350,17 +371,29 @@ const filteredAptList = computed(() => {
 
     // 가격 필터 조건
     if (filterPriceCriteria.value === "below5" && price > 50000) return false; // 5억 이하
-    if (filterPriceCriteria.value === "5to10" && (price <= 50000 || price > 100000)) return false; // 5억 ~ 10억
-    if (filterPriceCriteria.value === "10to20" && (price <= 100000 || price > 200000)) return false; // 10억 ~ 20억
-    if (filterPriceCriteria.value === "20to50" && (price <= 200000 || price > 500000)) return false; // 20억 ~ 50억
-    if (filterPriceCriteria.value === "above50" && price <= 500000) return false; // 50억 이상
+    if (
+      filterPriceCriteria.value === "5to10" &&
+      (price <= 50000 || price > 100000)
+    )
+      return false; // 5억 ~ 10억
+    if (
+      filterPriceCriteria.value === "10to20" &&
+      (price <= 100000 || price > 200000)
+    )
+      return false; // 10억 ~ 20억
+    if (
+      filterPriceCriteria.value === "20to50" &&
+      (price <= 200000 || price > 500000)
+    )
+      return false; // 20억 ~ 50억
+    if (filterPriceCriteria.value === "above50" && price <= 500000)
+      return false; // 50억 이상
 
     hideDealList();
 
     return true; // 모든 조건을 만족하면 반환
   });
 });
-
 
 const topViewedApartments = ref([]); // 랭킹 데이터
 const currentApartment = ref(null); // 현재 표시 중인 아파트
@@ -430,9 +463,7 @@ const navigateToDealList = (apartment) => {
   console.log("Selected Apartment:", selectedApt.value); // 디버깅용 로그
   showList.value = true;
 };
-
 </script>
-
 
 <template>
   <div class="home-container">
@@ -442,24 +473,47 @@ const navigateToDealList = (apartment) => {
         <!-- 필터 섹션 -->
         <div class="filters">
           <label for="areaSelect" class="label">동네 선택:</label>
-          <VSelect :selectOption="sidoList" v-model="searchSido" @onKeySelect="onChangeSido" />
-          <VSelect :selectOption="gugunList" v-model="searchGugun" @onKeySelect="onChangeGugun" />
-          <VSelect :selectOption="dongList" v-model="searchDong" @onKeySelect="onChangeDong" />
-
+          <VSelect
+            :selectOption="sidoList"
+            v-model="searchSido"
+            @onKeySelect="onChangeSido"
+          />
+          <VSelect
+            :selectOption="gugunList"
+            v-model="searchGugun"
+            @onKeySelect="onChangeGugun"
+          />
+          <VSelect
+            :selectOption="dongList"
+            v-model="searchDong"
+            @onKeySelect="onChangeDong"
+          />
 
           <label for="filterSelect" class="label">필터 선택:</label>
-          <select id="filterSelect" class="filter-select" v-model="filterCriteria">
+          <select
+            id="filterSelect"
+            class="filter-select"
+            v-model="filterCriteria"
+          >
             <option value="">평수</option>
             <option value="small">30평 이하</option>
             <option value="medium">30평 이상 50평 이하</option>
             <option value="large">50평 이상</option>
           </select>
-          <select id="filterYearSelect" class="filter-select" v-model="filterYearCriteria">
+          <select
+            id="filterYearSelect"
+            class="filter-select"
+            v-model="filterYearCriteria"
+          >
             <option value="">건축 연도</option>
             <option value="recent">2010년 이후</option>
             <option value="old">2010년 이전</option>
           </select>
-          <select id="filterPriceSelect" class="filter-select" v-model="filterPriceCriteria">
+          <select
+            id="filterPriceSelect"
+            class="filter-select"
+            v-model="filterPriceCriteria"
+          >
             <option value="">가격</option>
             <option value="below5">5억 이하</option>
             <option value="5to10">5억 ~ 10억</option>
@@ -470,10 +524,14 @@ const navigateToDealList = (apartment) => {
         </div>
 
         <!-- 인기 단지 랭킹 -->
-        <div class="ranking-container" @click="navigateToDealList(currentApartment)">
+        <div
+          class="ranking-container"
+          @click="navigateToDealList(currentApartment)"
+        >
           <span class="ranking-badge">인기 단지</span>
           <span class="ranking-text">
-            {{ currentRank }} - {{ currentApartment?.apartmentName || "데이터 없음" }}
+            {{ currentRank }} -
+            {{ currentApartment?.apartmentName || "데이터 없음" }}
           </span>
           <span class="ranking-count">
             {{ currentApartment?.viewCount || 0 }}명
@@ -485,10 +543,18 @@ const navigateToDealList = (apartment) => {
     <!-- 본문 내용 -->
     <div class="home-contents">
       <aside>
-        <HomeList v-if="!showList" :apartments="filteredAptList" @key-select="clickApt" />
+        <HomeList
+          v-if="!showList"
+          :apartments="filteredAptList"
+          @key-select="clickApt"
+        />
         <div v-if="showList" class="map-list">
-          <HomeDealList :apt="selectedApt" :showBackButton="showBackButton" :key="selectedApt.aptSeq"
-            @hide-list="hideDealList" />
+          <HomeDealList
+            :apt="selectedApt"
+            :showBackButton="showBackButton"
+            :key="selectedApt.aptSeq"
+            @hide-list="hideDealList"
+          />
         </div>
       </aside>
       <section>
@@ -632,7 +698,6 @@ section {
   padding: 0.5rem;
   background-color: white;
 }
-
 
 .filter-ranking-container {
   display: flex;
