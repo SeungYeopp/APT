@@ -3,11 +3,12 @@ package com.ssafy.util;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.boot.CommandLineRunner;
 
 import javax.sql.DataSource;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.Statement;
 
@@ -38,17 +39,36 @@ public class SqlDumpRunner implements CommandLineRunner {
         };
 
         try (Connection conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
-            // 🔓 외래 키 체크 비활성화
+            // Disable foreign key checks
             stmt.execute("SET FOREIGN_KEY_CHECKS = 0");
 
             for (String file : files) {
-                var resource = new ClassPathResource("dump/" + file);
-                ScriptUtils.executeSqlScript(conn, resource);
+                executeSqlByLine(conn, file);
                 System.out.println("[✔] Loaded SQL file: " + file);
             }
 
-            // 🔒 외래 키 체크 재활성화
+            // Enable foreign key checks
             stmt.execute("SET FOREIGN_KEY_CHECKS = 1");
+        }
+    }
+
+    private void executeSqlByLine(Connection conn, String filename) throws Exception {
+        var resource = new ClassPathResource("dump/" + filename);
+        try (
+                BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()));
+                Statement stmt = conn.createStatement()
+        ) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // 주석 무시
+                if (line.trim().startsWith("--") || line.trim().isEmpty()) continue;
+                sb.append(line).append(" ");
+                if (line.trim().endsWith(";")) {
+                    stmt.execute(sb.toString());
+                    sb.setLength(0); // 리셋
+                }
+            }
         }
     }
 }
