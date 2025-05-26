@@ -21,20 +21,20 @@ public class SqlDumpRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         String[] files = {
-                "aptdb_board.sql",
-                "aptdb_chat_history.sql",
-                "aptdb_dong_code.sql",
-                "aptdb_file_info.sql",
+                "aptdb_sido_code.sql",
                 "aptdb_gugun_code.sql",
-                "aptdb_house_deals.sql",
+                "aptdb_dong_code.sql",
+                "aptdb_user.sql",
                 "aptdb_house_infos.sql",
+                "aptdb_house_deals.sql",
+                "aptdb_recent_deals.sql",
+                "aptdb_review.sql",
+                "aptdb_board.sql",
+                "aptdb_file_info.sql",
                 "aptdb_interest_area.sql",
                 "aptdb_interest_house.sql",
                 "aptdb_oauth_entity.sql",
-                "aptdb_recent_deals.sql",
-                "aptdb_review.sql",
-                "aptdb_sido_code.sql",
-                "aptdb_user.sql",
+                "aptdb_chat_history.sql",
                 "aptdb_verification_code.sql"
         };
 
