@@ -1,0 +1,58 @@
+-- MySQL dump 10.13  Distrib 8.0.38, for Win64 (x86_64)
+--
+-- Host: 127.0.0.1    Database: aptdb
+-- ------------------------------------------------------
+-- Server version	8.0.39
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `interest_house`
+--
+
+DROP TABLE IF EXISTS `interest_house`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `interest_house` (
+  `interest_id` bigint NOT NULL AUTO_INCREMENT,
+  `time` datetime(6) DEFAULT NULL,
+  `bookmarked` bit(1) NOT NULL,
+  `user_id` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL,
+  `house_info_id` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL,
+  PRIMARY KEY (`interest_id`),
+  UNIQUE KEY `unique_interest_house` (`user_id`,`house_info_id`),
+  KEY `FK7ht5hjqfmo2dhqdp03bbsu5xv` (`house_info_id`),
+  CONSTRAINT `FK7ht5hjqfmo2dhqdp03bbsu5xv` FOREIGN KEY (`house_info_id`) REFERENCES `house_infos` (`apt_seq`),
+  CONSTRAINT `FK9uudamk3heyu1n8kpam6qv6ao` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=376 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `interest_house`
+--
+
+LOCK TABLES `interest_house` WRITE;
+/*!40000 ALTER TABLE `interest_house` DISABLE KEYS */;
+INSERT INTO `interest_house` VALUES (281,'2024-11-26 18:39:16.000000',_binary '','13','11680-266'),(282,'2024-11-26 11:27:03.000000',_binary '\0','13','11680-3626'),(283,'2024-11-26 11:27:13.000000',_binary '\0','13','11680-504'),(285,'2024-11-26 11:27:10.000000',_binary '\0','13','11680-669'),(291,'2024-11-26 18:35:40.000000',_binary '\0','23','11680-4036'),(292,'2024-11-26 18:35:01.000000',_binary '','23','41135-138'),(294,'2024-11-26 13:57:07.000000',_binary '','23','11680-3626'),(295,'2024-11-26 13:57:06.000000',_binary '','23','11680-236'),(299,'2024-11-26 14:00:18.000000',_binary '\0','23','41463-622'),(304,'2024-11-26 19:04:35.000000',_binary '\0','12','11500-6919'),(305,'2024-11-26 10:06:25.000000',_binary '\0','12','41281-46'),(306,'2024-11-26 10:12:19.000000',_binary '\0','12','11680-266'),(307,'2024-11-26 10:07:39.000000',_binary '\0','12','11680-3621'),(308,'2024-11-26 10:12:34.000000',_binary '\0','12','11680-236'),(309,'2024-11-26 19:19:43.000000',_binary '\0','23','41150-2364'),(310,'2024-11-26 19:20:28.000000',_binary '\0','1','11680-266'),(311,'2024-11-26 19:20:32.000000',_binary '\0','1','11680-3626'),(312,'2024-11-26 19:20:37.000000',_binary '\0','1','11680-236'),(313,'2024-11-26 19:20:40.000000',_binary '\0','1','11680-271'),(314,'2024-11-26 19:20:45.000000',_binary '\0','1','11680-715'),(315,'2024-11-26 19:20:48.000000',_binary '\0','1','11680-665'),(316,'2024-11-26 19:21:07.000000',_binary '\0','2','11680-266'),(317,'2024-11-26 19:21:13.000000',_binary '\0','2','11680-295'),(318,'2024-11-26 21:23:55.000000',_binary '','2','11680-673'),(319,'2024-11-26 19:21:17.000000',_binary '\0','2','11680-278'),(320,'2024-11-26 20:43:38.000000',_binary '\0','3','11680-266'),(321,'2024-11-26 19:21:42.000000',_binary '\0','3','11680-3621'),(322,'2024-11-26 19:21:47.000000',_binary '\0','3','11680-673'),(323,'2024-11-26 19:21:50.000000',_binary '\0','3','11680-716'),(324,'2024-11-26 19:22:05.000000',_binary '\0','3','11500-124'),(325,'2024-11-26 19:22:34.000000',_binary '\0','4','11680-266'),(326,'2024-11-26 19:22:36.000000',_binary '\0','4','11680-3621'),(327,'2024-11-26 19:22:47.000000',_binary '\0','4','11500-124'),(328,'2024-11-26 19:23:06.000000',_binary '\0','5','11500-124'),(329,'2024-11-26 19:23:11.000000',_binary '\0','5','11680-266'),(330,'2024-11-26 19:23:13.000000',_binary '\0','5','11680-3621'),(331,'2024-11-26 19:24:36.000000',_binary '\0','6','11500-124'),(332,'2024-11-26 19:24:00.000000',_binary '\0','6','26380-207'),(333,'2024-11-26 19:24:08.000000',_binary '\0','6','26200-45'),(335,'2024-11-26 19:25:02.000000',_binary '\0','7','11500-124'),(336,'2024-11-26 19:25:12.000000',_binary '\0','7','26380-207'),(337,'2024-11-26 19:25:22.000000',_binary '\0','7','11680-266'),(338,'2024-11-26 19:25:49.000000',_binary '\0','8','11680-266'),(339,'2024-11-26 19:25:57.000000',_binary '\0','8','11500-124'),(340,'2024-11-26 19:26:03.000000',_binary '\0','8','26380-207'),(341,'2024-11-26 19:26:21.000000',_binary '\0','9','11500-124'),(342,'2024-11-26 19:26:28.000000',_binary '\0','9','26380-207'),(343,'2024-11-26 19:26:35.000000',_binary '\0','9','11680-266'),(344,'2024-11-26 19:27:00.000000',_binary '\0','22','11500-124'),(345,'2024-11-26 19:27:05.000000',_binary '\0','22','26380-207'),(346,'2024-11-26 19:27:10.000000',_binary '\0','22','11680-266'),(347,'2024-11-26 21:20:10.000000',_binary '\0','1','41463-622'),(348,'2024-11-26 21:21:37.000000',_binary '\0','2','41463-622'),(349,'2024-11-26 20:42:17.000000',_binary '\0','3','41463-622'),(355,'2024-11-26 21:18:36.000000',_binary '','10','11680-266'),(359,'2024-11-26 21:14:34.000000',_binary '\0','10','11680-3621'),(360,'2024-11-26 21:14:22.000000',_binary '\0','10','11680-3670'),(366,'2024-11-26 21:19:10.000000',_binary '\0','10','41463-622'),(372,'2024-11-26 16:32:21.000000',_binary '\0','23','11680-266'),(374,'2024-11-26 16:31:52.000000',_binary '\0','23','11680-271');
+/*!40000 ALTER TABLE `interest_house` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2025-05-24 22:37:40

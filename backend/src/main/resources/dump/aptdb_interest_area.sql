@@ -1,0 +1,56 @@
+-- MySQL dump 10.13  Distrib 8.0.38, for Win64 (x86_64)
+--
+-- Host: 127.0.0.1    Database: aptdb
+-- ------------------------------------------------------
+-- Server version	8.0.39
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `interest_area`
+--
+
+DROP TABLE IF EXISTS `interest_area`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `interest_area` (
+  `interest_id` bigint NOT NULL AUTO_INCREMENT,
+  `time` datetime(6) DEFAULT NULL,
+  `bookmarked` bit(1) NOT NULL,
+  `dong_cd` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL,
+  `user_id` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL,
+  PRIMARY KEY (`interest_id`),
+  UNIQUE KEY `unique_interest_area` (`user_id`,`dong_cd`),
+  CONSTRAINT `FK3fbyug1uxlttdevkrlmsuskbo` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=92 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `interest_area`
+--
+
+LOCK TABLES `interest_area` WRITE;
+/*!40000 ALTER TABLE `interest_area` DISABLE KEYS */;
+INSERT INTO `interest_area` VALUES (50,'2024-11-26 04:56:07.000000',_binary '\0','1123010100','23'),(51,'2024-11-26 09:34:59.000000',_binary '\0','4113510700','23'),(54,'2024-11-26 10:04:05.000000',_binary '\0','1150010300','12'),(55,'2024-11-26 10:11:55.000000',_binary '\0','1165010800','12'),(56,'2024-11-26 10:10:53.000000',_binary '\0','2614010300','12'),(57,'2024-11-26 10:07:08.000000',_binary '\0','1168010100','12'),(61,'2024-11-26 10:18:18.000000',_binary '\0','1168011000','23'),(62,'2024-11-26 10:21:12.000000',_binary '\0','1168010300','2'),(63,'2024-11-26 10:21:46.000000',_binary '\0','1168010300','3'),(65,'2024-11-26 12:09:15.000000',_binary '\0','1168010100','10'),(66,'2024-11-26 21:18:47.000000',_binary '','3023012600','10'),(67,'2024-11-26 12:08:14.000000',_binary '\0','3023012500','10'),(68,'2024-11-26 12:07:43.000000',_binary '\0','2811015000','10'),(69,'2024-11-26 12:07:41.000000',_binary '\0','2811015200','10'),(70,'2024-11-26 12:07:38.000000',_binary '\0','2811013200','10'),(71,'2024-11-26 12:07:33.000000',_binary '\0','2811012900','10'),(72,'2024-11-26 12:07:30.000000',_binary '\0','2811010300','10'),(73,'2024-11-26 12:07:28.000000',_binary '\0','2811010200','10'),(74,'2024-11-26 12:07:25.000000',_binary '\0','2811010100','10'),(76,'2024-11-26 12:24:30.000000',_binary '\0','1168011000','2'),(77,'2024-11-26 12:29:25.000000',_binary '\0','3023012600','2'),(78,'2024-11-26 13:02:53.000000',_binary '\0','1168010100','23'),(79,'2024-11-26 21:48:18.000000',_binary '','3023012600','23'),(86,'2024-11-26 12:50:23.000000',_binary '\0','1168010500','23'),(88,'2024-11-26 13:02:57.000000',_binary '\0','1165010700','23'),(89,'2024-11-26 13:11:23.000000',_binary '\0','1171010100','23'),(90,'2024-11-26 13:06:25.000000',_binary '\0','1144012000','23');
+/*!40000 ALTER TABLE `interest_area` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2025-05-24 22:37:39
