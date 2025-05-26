@@ -33,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 
 //@CrossOrigin(origins = { "*" }, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.POST} , maxAge = 6000)
 @RestController
-@RequestMapping("/board")
+@RequestMapping("/api/board")
 @Tag(name = "게시판 컨트롤러", description = "게시판에 글을 등록, 수정, 삭제, 목록, 상세보기등 전반적인 처리를 하는 클래스.")
 @Slf4j
 public class BoardController {

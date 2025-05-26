@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/interest")
+@RequestMapping("/api/interest")
 @RequiredArgsConstructor
 @Slf4j
 public class InterestController {

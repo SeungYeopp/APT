@@ -26,7 +26,7 @@ export default {
 
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_VUE_API_URL}/ai/chat`,
+          `${import.meta.env.VITE_VUE_API_URL}/api/ai/chat`,
           {
             userId: this.userId,
           }
@@ -103,7 +103,7 @@ export default {
       // AI 응답 요청
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_VUE_API_URL}/ai/chat`,
+          `${import.meta.env.VITE_VUE_API_URL}/api/ai/chat`,
           requestData,
           {
             headers: { "Content-Type": "application/json" },

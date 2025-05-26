@@ -61,7 +61,7 @@ export default {
     const sendAuthCodeToBackend = async (code) => {
       try {
         const response = await axios.post(
-          "${import.meta.env.VITE_VUE_API_URL}/oauth/auth",
+          "${import.meta.env.VITE_VUE_API_URL}/api/oauth/auth",
           { code },
           { withCredentials: true }
         );

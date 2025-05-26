@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/map")
+@RequestMapping("/api/map")
 @Tag(name = "시도 구군 컨트롤러", description = "시도 구군정보를 처리하는 클래스.")
 @Slf4j
 public class MapController {

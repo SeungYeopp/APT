@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/review")
+@RequestMapping("/api/review")
 @RequiredArgsConstructor
 @Tag(name = "리뷰 컨트롤러", description = "사용자의 아파트 리뷰를 관리합니다.")
 public class ReviewController {

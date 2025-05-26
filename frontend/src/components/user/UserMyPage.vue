@@ -5,7 +5,7 @@ import apiClient from "@/util/axios-common.js";
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import UserInterest from "./UserInterest.vue";
-const baseUrl = import.meta.env.VITE_VUE_API_URL;
+const baseUrl = import.meta.env.VITE_VUE_API_URL / api;
 
 const userStore = useUserStore();
 const { getUser } = storeToRefs(userStore);
@@ -133,7 +133,9 @@ const fetchUserProfile = async () => {
     // loginType에 따라 프로필 이미지 설정
     if (isRegular.value) {
       profileImage.value = response.data.profileImage
-        ? `${import.meta.env.VITE_VUE_API_URL}${response.data.profileImage}`
+        ? `${import.meta.env.VITE_VUE_API_URL}/api/${
+            response.data.profileImage
+          }`
         : "http://localhost:5173/src/img/default.jpg"; // 기본 이미지 경로
     } else {
       // 소셜 로그인일 경우 profileImage를 그대로 사용
@@ -170,7 +172,7 @@ const handleProfileImageUpload = async (event) => {
     const fileName = response.data.profileImage;
     if (!fileName) throw new Error("File name is undefined or empty");
 
-    profileImage.value = `${import.meta.env.VITE_VUE_API_URL}${fileName}`;
+    profileImage.value = `${import.meta.env.VITE_VUE_API_URL}/api/${fileName}`;
     console.log("Updated profile image URL:", profileImage.value);
   } catch (error) {
     console.error("Failed to upload profile image:", error);

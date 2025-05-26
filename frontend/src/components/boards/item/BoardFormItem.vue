@@ -145,7 +145,7 @@ function updateArticle() {
 
 function sendEmail(emailData) {
   return new Promise((resolve, reject) => {
-    fetch(`${import.meta.env.VITE_VUE_API_URL}/board`, {
+    fetch(`${import.meta.env.VITE_VUE_API_URL}/api/board`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

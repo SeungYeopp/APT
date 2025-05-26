@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 @RequiredArgsConstructor
 @Tag(name = "사용자 컨트롤러", description = "회원 등록, 로그인, 로그아웃 등 사용자를 관리합니다.")
 public class UserController {

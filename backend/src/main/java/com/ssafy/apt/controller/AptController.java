@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
-@RequestMapping("/apt")
+@RequestMapping("/api/apt")
 @RequiredArgsConstructor
 @Tag(name = "Apt 컨트롤러", description = "아파트 정보 및 실거래가 정보 관리하는 클래스")
 public class AptController {

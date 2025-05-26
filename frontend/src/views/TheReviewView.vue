@@ -6,13 +6,13 @@ const reviews = ref([]); // 리뷰 데이터
 const visibleReviews = ref([]); // 현재 보여지는 리뷰 리스트
 let currentIndex = 0; // 캐러셀 현재 인덱스
 
-const baseUrl = import.meta.env.VITE_VUE_API_URL;
+const baseUrl = import.meta.env.VITE_VUE_API_URL / api;
 
 // Fetch high-rating reviews from API
 const fetchHighRatingReviews = async () => {
   try {
     const response = await axios.get(
-      `${import.meta.env.VITE_VUE_API_URL}/review/high-rating`
+      `${import.meta.env.VITE_VUE_API_URL}/api/review/high-rating`
     ); // API 호출
     reviews.value = response.data;
     updateVisibleReviews();
