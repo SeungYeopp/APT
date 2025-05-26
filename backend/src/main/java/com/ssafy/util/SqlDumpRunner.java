@@ -39,6 +39,12 @@ public class SqlDumpRunner implements CommandLineRunner {
         };
 
         try (Connection conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
+            // 강제로 세션 문자셋 설정
+            stmt.execute("SET NAMES utf8mb4");
+            stmt.execute("SET character_set_connection = utf8mb4");
+            stmt.execute("SET character_set_client = utf8mb4");
+            stmt.execute("SET character_set_results = utf8mb4");
+
             // Disable foreign key checks
             stmt.execute("SET FOREIGN_KEY_CHECKS = 0");
 
