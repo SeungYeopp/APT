@@ -17,7 +17,6 @@ export default defineConfig({
       "/apt": {
         target: "http://localhost:8080",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/apt/, "/apt"),
       },
     },
   },
