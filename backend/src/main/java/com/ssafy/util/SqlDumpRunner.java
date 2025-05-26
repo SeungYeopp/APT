@@ -1,26 +1,24 @@
 package com.ssafy.util;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.boot.CommandLineRunner;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
 
 @Component
 @RequiredArgsConstructor
 public class SqlDumpRunner implements CommandLineRunner {
 
-    @Value("${spring.datasource.username}")
-    private String username;
-
-    @Value("${spring.datasource.password}")
-    private String password;
-
-    @Value("${spring.datasource.url}")
-    private String jdbcUrl;
+    private final DataSource dataSource;
 
     @Override
     public void run(String... args) throws Exception {
-        String dbName = getDatabaseName(jdbcUrl);
         String[] files = {
                 "aptdb_board.sql",
                 "aptdb_chat_history.sql",
@@ -39,23 +37,12 @@ public class SqlDumpRunner implements CommandLineRunner {
                 "aptdb_verification_code.sql"
         };
 
-        for (String file : files) {
-            String path = "src/main/resources/dump/" + file;
-            String command = String.format(
-                    "mysql -u%s -p%s %s < %s",
-                    username, password, dbName, path
-            );
-            Process process = Runtime.getRuntime().exec(new String[] { "bash", "-c", command });
-            int exitCode = process.waitFor();
-            if (exitCode != 0) {
-                throw new RuntimeException("Failed to execute dump: " + file);
-            } else {
-                System.out.println("[✔] Executed: " + file);
+        try (Connection conn = dataSource.getConnection()) {
+            for (String file : files) {
+                var resource = new ClassPathResource("dump/" + file);
+                ScriptUtils.executeSqlScript(conn, resource);
+                System.out.println("[✔] Loaded SQL file: " + file);
             }
         }
-    }
-
-    private String getDatabaseName(String url) {
-        return url.substring(url.lastIndexOf("/") + 1);
     }
 }
