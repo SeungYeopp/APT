@@ -5,7 +5,7 @@ import Chart from "chart.js/auto";
 import { getAptDeal } from "@/api/apt.js";
 import ReviewModal from "./ReviewModal.vue";
 import axios from "@/util/axios-common.js";
-const baseUrl = import.meta.env.VITE_VUE_API_URL / api;
+const baseUrl = import.meta.env.VITE_VUE_API_URL;
 
 const props = defineProps({
   apt: {
