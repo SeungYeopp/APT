@@ -2,7 +2,6 @@ package com.ssafy.util;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.stereotype.Component;
@@ -10,6 +9,7 @@ import org.springframework.boot.CommandLineRunner;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.Statement;
 
 @Component
 @RequiredArgsConstructor
@@ -37,12 +37,18 @@ public class SqlDumpRunner implements CommandLineRunner {
                 "aptdb_verification_code.sql"
         };
 
-        try (Connection conn = dataSource.getConnection()) {
+        try (Connection conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
+            // 🔓 외래 키 체크 비활성화
+            stmt.execute("SET FOREIGN_KEY_CHECKS = 0");
+
             for (String file : files) {
                 var resource = new ClassPathResource("dump/" + file);
                 ScriptUtils.executeSqlScript(conn, resource);
                 System.out.println("[✔] Loaded SQL file: " + file);
             }
+
+            // 🔒 외래 키 체크 재활성화
+            stmt.execute("SET FOREIGN_KEY_CHECKS = 1");
         }
     }
 }
