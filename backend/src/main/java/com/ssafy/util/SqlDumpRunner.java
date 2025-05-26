@@ -19,12 +19,6 @@ public class SqlDumpRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-
-        String flag = System.getProperty("load.sql.dump");
-        if (flag == null || !flag.equalsIgnoreCase("true")) {
-            System.out.println("[⚠] SQL dump 로딩 스킵됨 (load.sql.dump=false)");
-            return;
-        }
         // -- 배포 환경 대응 로그
         System.out.println("[⚙] Initializing SQL schema and data dump...");
 
